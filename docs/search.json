@@ -1,0 +1,471 @@
+[
+  {
+    "objectID": "stringr.html",
+    "href": "stringr.html",
+    "title": "StringR",
+    "section": "",
+    "text": "For further reference, see the stringr documentation here, and this helpful cheat sheet.\n# install.packages(stringr)\nlibrary(stringr)\nlibrary(dplyr)"
+  },
+  {
+    "objectID": "stringr.html#length",
+    "href": "stringr.html#length",
+    "title": "StringR",
+    "section": "Length",
+    "text": "Length\n\nfruits &lt;- c(\"apple\", \"banana\", \"orange\")\n\nstr_length(fruits)\n\n[1] 5 6 6"
+  },
+  {
+    "objectID": "stringr.html#count-pattern",
+    "href": "stringr.html#count-pattern",
+    "title": "StringR",
+    "section": "Count Pattern",
+    "text": "Count Pattern\nReturns a vector of the same length as the input where each item is an integer representing the number of times pattern appears in the string.\n\nexample &lt;- \"This string says the word string several times to see how many times the pattern 'string' appears\"\n\nstr_count(example, pattern = \"string\")\n\n[1] 3"
+  },
+  {
+    "objectID": "stringr.html#sec-check-for-pattern",
+    "href": "stringr.html#sec-check-for-pattern",
+    "title": "StringR",
+    "section": "Check for Pattern",
+    "text": "Check for Pattern\nstr_detect() checks whether a string contains the pattern. This function, as well as str_starts() and str_ends(), have a parameter called negate, which inverts the resulting boolean vector (so if you want to find names that do not contain an L, set the negate parameter to TRUE).\n\nnames &lt;- c(\"John\", \"Julia\", \"Luke\", \"Lucia\", \"Clara\")\n\nstr_detect(names, \"[lL]\") # names that contain an L\n\n[1] FALSE  TRUE  TRUE  TRUE  TRUE\n\n\nstr_starts() checks whether a string starts with a pattern.\n\nstr_starts(names, \"[lL]\")\n\n[1] FALSE FALSE  TRUE  TRUE FALSE\n\n\nstr_ends() checks whether a string ends with a pattern.\n\nstr_ends(names, \"[aA]\")\n\n[1] FALSE  TRUE FALSE  TRUE  TRUE\n\n\nstr_which() returns the indices of strings that contain a pattern.\n\nstr_which(names, \"^L\")\n\n[1] 3 4"
+  },
+  {
+    "objectID": "stringr.html#locate-indices-of-pattern",
+    "href": "stringr.html#locate-indices-of-pattern",
+    "title": "StringR",
+    "section": "Locate Indices of Pattern",
+    "text": "Locate Indices of Pattern\nUse str_locate() or str_locate_all() to find the indices of where a pattern occurs in a string. str_locate() will find the first match, and str_locate_all() will find all matches.\n\npasswords &lt;- c(\"8kZSaLmP\", \"P2SAse20\", \"odA31BWK\")\n\nstr_locate(passwords, \"\\\\d\") # find the first number\n\n     start end\n[1,]     1   1\n[2,]     2   2\n[3,]     4   4\n\nstr_locate_all(passwords, \"\\\\d\")\n\n[[1]]\n     start end\n[1,]     1   1\n\n[[2]]\n     start end\n[1,]     2   2\n[2,]     7   7\n[3,]     8   8\n\n[[3]]\n     start end\n[1,]     4   4\n[2,]     5   5"
+  },
+  {
+    "objectID": "stringr.html#str_split-functions",
+    "href": "stringr.html#str_split-functions",
+    "title": "StringR",
+    "section": "str_split functions",
+    "text": "str_split functions\nThere are 4 functions that split strings, depending on the output you need:\n\nstr_split(string, pattern): use the simplify parameter to return a list when simplify=FALSE and a matrix if TRUE where each list item is a character vector with all split character strings\n\n\n# for example, we could analyze the charged language that Trump typically tweets with to see what words he tweets most often:\ntrump_tweets &lt;- read.csv(\"https://raw.githubusercontent.com/biancaschutz/rguides/refs/heads/main/trump_tweets.csv\")$Text\n\nsplit_on &lt;- '[\\\\W,\\\\.\"]*\\\\s[\\\\W,\\\\.\"]*'\n\nlist_of_words &lt;- unlist(\n  str_split(\n    string = str_to_lower(trump_tweets), pattern = split_on, simplify = FALSE))\n# if you use simplify = TRUE, it will instead return a matrix, not a list\n\nhead(data.frame(table(list_of_words)) %&gt;% \n       # filtering out less explanatory words such as \"the\", etc. \n       filter(str_length(list_of_words) &gt; 4, !list_of_words %in% c(\"america\", \"united\", \"states\", \"these\", \"their\")) %&gt;% \n       arrange(desc(Freq)), 5)\n\n\n  \n\n\n\n\nstr_split_1(): use for a single string\n\n\nlongest_tweet &lt;- trump_tweets[order(nchar(trump_tweets), trump_tweets, decreasing = TRUE)][[1]]\n\nlength(str_split_1(longest_tweet, split_on)) # the longest word is 510 words long\n\n[1] 510\n\n\n\nstr_split_fixed(): returns a matrix with n columns\n\n\noptions(warn=-1)\n\nfriends &lt;- readLines(\"https://raw.githubusercontent.com/biancaschutz/rguides/refs/heads/main/myfriends.txt\")\n\nfriends_mat &lt;- str_split_fixed(friends, \"\\\\b\\\\s+\\\\b\", n = 2)\n\nhead(friends_mat)\n\n     [,1]        [,2]   \n[1,] \"CHEWBACCA\" \"R2-D2\"\n[2,] \"C-3PO\"     \"R2-D2\"\n[3,] \"BERU\"      \"R2-D2\"\n[4,] \"LUKE\"      \"R2-D2\"\n[5,] \"OWEN\"      \"R2-D2\"\n[6,] \"OBI-WAN\"   \"R2-D2\"\n\n\n\nstr_split_i(): returns the ith item in the split string\n\n\nhead(str_split_i(friends, \"\\\\b\\\\s+\\\\b\", i = 2))\n\n[1] \"R2-D2\" \"R2-D2\" \"R2-D2\" \"R2-D2\" \"R2-D2\" \"R2-D2\""
+  },
+  {
+    "objectID": "stringr.html#combine-strings",
+    "href": "stringr.html#combine-strings",
+    "title": "StringR",
+    "section": "Combine strings",
+    "text": "Combine strings\nUse str_c to combine different string objects\n\narea_code &lt;- \"123\"\nnumber &lt;- \"456-7890\"\n\nstr_c(area_code, number, sep = \"-\")\n\n[1] \"123-456-7890\"\n\n\nUse str_flatten for a vector of characters:\n\nphone &lt;- c(\"123\", \"456\", \"7890\")\n\nstr_flatten(phone, collapse = \"-\")\n\n[1] \"123-456-7890\""
+  },
+  {
+    "objectID": "stringr.html#string-duplicates",
+    "href": "stringr.html#string-duplicates",
+    "title": "StringR",
+    "section": "String duplicates",
+    "text": "String duplicates\nUse str_dup() to repeat a string times times.\n\ngoowls &lt;- \"Go Rice Owls!\"\n\nstr_dup(goowls, 5)\n\n[1] \"Go Rice Owls!Go Rice Owls!Go Rice Owls!Go Rice Owls!Go Rice Owls!\"\n\n\nUse str_unique() to get only unique strings\n\nstr_unique(friends_mat[,1])\n\n [1] \"CHEWBACCA\"  \"C-3PO\"      \"BERU\"       \"LUKE\"       \"OWEN\"      \n [6] \"OBI-WAN\"    \"LEIA\"       \"BIGGS\"      \"HAN\"        \"CAMIE\"     \n[11] \"DARTHVADER\" \"MOTTI\"      \"DODONNA\""
+  },
+  {
+    "objectID": "stringr.html#sec-removal",
+    "href": "stringr.html#sec-removal",
+    "title": "StringR",
+    "section": "Removal",
+    "text": "Removal\nTo remove part of a string, use the str_remove() or str_remove_all() functions.\n\nresponses &lt;- c(\"Y\", \"Yes\", \"Nope\", \"Yeah\", \"Y\", \"Yes\", \"Y\", \"y\", \"N\", \"no\", \"y\")\n\nstr_remove(responses, \"[^YyNn]\")\n\n [1] \"Y\"   \"Ys\"  \"Npe\" \"Yah\" \"Y\"   \"Ys\"  \"Y\"   \"y\"   \"N\"   \"n\"   \"y\"  \n\nstr_remove_all(responses, \"[^YyNn]\") # now we have just Ys and Ns, this will help with ensuring datasets are coded the same across the board\n\n [1] \"Y\" \"Y\" \"N\" \"Y\" \"Y\" \"Y\" \"Y\" \"y\" \"N\" \"n\" \"y\""
+  },
+  {
+    "objectID": "stringr.html#by-index",
+    "href": "stringr.html#by-index",
+    "title": "StringR",
+    "section": "By Index",
+    "text": "By Index\nUse str_sub() to extract parts of a string by their indices.\n\ncurrency &lt;- c(\"$10\", \"€100\", \"¥187\", \"£32\")\n\nstr_sub(currency, start = 1, end = 1)\n\n[1] \"$\" \"€\" \"¥\" \"£\""
+  },
+  {
+    "objectID": "stringr.html#subset-vector-of-strings",
+    "href": "stringr.html#subset-vector-of-strings",
+    "title": "StringR",
+    "section": "Subset Vector Of Strings",
+    "text": "Subset Vector Of Strings\nTo subset a vector of multiple strings so it only contains those that have the pattern, use str_subset().\n\nnames &lt;- c(\"John Smith\", \"George Washington\", \"Alexander\", \"Quincy Adams\")\n\nstr_subset(names, \"\\\\w+\\\\s+\\\\w+\") # only full names (first and last)\n\n[1] \"John Smith\"        \"George Washington\" \"Quincy Adams\""
+  },
+  {
+    "objectID": "stringr.html#sec-extract-patterns",
+    "href": "stringr.html#sec-extract-patterns",
+    "title": "StringR",
+    "section": "Extract Patterns",
+    "text": "Extract Patterns\nTo extract part of a string, use the str_extract() or str_match() functions.\nstr_extract() and str_extract_all() return the first match and all matches as a vector, respectively.\n\nnames2 &lt;- c(\"Hugo Riley\", \"Allison Slater\", \"Anna Hess\", \"Emmanuel Malone\", \"Abel Lee\", \"Jerry Alex Walter\")\n\nstr_extract(names2, \"\\\\b\\\\w+\\\\b\") # extract the first name\n\n[1] \"Hugo\"     \"Allison\"  \"Anna\"     \"Emmanuel\" \"Abel\"     \"Jerry\"   \n\nstr_extract_all(names2, \"\\\\b\\\\w+\\\\b\") # extract all names in each string\n\n[[1]]\n[1] \"Hugo\"  \"Riley\"\n\n[[2]]\n[1] \"Allison\" \"Slater\" \n\n[[3]]\n[1] \"Anna\" \"Hess\"\n\n[[4]]\n[1] \"Emmanuel\" \"Malone\"  \n\n[[5]]\n[1] \"Abel\" \"Lee\" \n\n[[6]]\n[1] \"Jerry\"  \"Alex\"   \"Walter\"\n\n\nstr_match() and str_match_all() return matrices rather than vectors, where each row is a string and each column is an instance of the pattern. For example, the 2nd row and 3rd column would be the 3rd instance of the pattern in the 2nd string.\n\nstr_match(names2, \"\\\\b\\\\w+\\\\b\") # extract the first name\n\n     [,1]      \n[1,] \"Hugo\"    \n[2,] \"Allison\" \n[3,] \"Anna\"    \n[4,] \"Emmanuel\"\n[5,] \"Abel\"    \n[6,] \"Jerry\"   \n\nstr_match_all(names2, \"\\\\b\\\\w+\\\\b\") # extract all names in each string\n\n[[1]]\n     [,1]   \n[1,] \"Hugo\" \n[2,] \"Riley\"\n\n[[2]]\n     [,1]     \n[1,] \"Allison\"\n[2,] \"Slater\" \n\n[[3]]\n     [,1]  \n[1,] \"Anna\"\n[2,] \"Hess\"\n\n[[4]]\n     [,1]      \n[1,] \"Emmanuel\"\n[2,] \"Malone\"  \n\n[[5]]\n     [,1]  \n[1,] \"Abel\"\n[2,] \"Lee\" \n\n[[6]]\n     [,1]    \n[1,] \"Jerry\" \n[2,] \"Alex\"  \n[3,] \"Walter\""
+  },
+  {
+    "objectID": "regex.html",
+    "href": "regex.html",
+    "title": "Regex",
+    "section": "",
+    "text": "To understand the functions used from the stringr package, see the stringr guide\nFor regex practice outside of R, I like using regex101.com to test my regex patterns before I apply them to my data."
+  },
+  {
+    "objectID": "regex.html#negative-character-classes",
+    "href": "regex.html#negative-character-classes",
+    "title": "Regex",
+    "section": "Negative Character Classes",
+    "text": "Negative Character Classes\nYou can also find matches that are not part of a character class:\n\nfirst_nonalpha &lt;- \"[^A-Za-z]\"\n\nstr_extract(example_string, first_nonalpha) # prints the first non-alphabetical character in example_string\n\n[1] \"9\"\n\n\nThere are negative shorthands as well:\n\nexample_string4 &lt;- \"1. This is a password: s7dFe8\"\nnot_digits &lt;- \"\\\\D\" # same as [^\\\\d]\nnot_words &lt;- \"\\\\W\" # same as [^\\\\w]\nnot_whitespace &lt;- \"\\\\S\" # same as [^\\\\s]\n\nstr_extract(example_string4, not_digits)\n\n[1] \".\"\n\nstr_extract(example_string4, not_words)\n\n[1] \".\"\n\nstr_extract(example_string4, not_whitespace)\n\n[1] \"1\""
+  },
+  {
+    "objectID": "regex.html#wildcard",
+    "href": "regex.html#wildcard",
+    "title": "Regex",
+    "section": "Wildcard",
+    "text": "Wildcard\nIn regex, the . is a powerful shorthand that matches any character, including whitespaces.\n\nwildcard_example &lt;- \"sdjf\"\nwildcard_example2 &lt;- \" sdjf\"\n\nwildcard &lt;- \".\"\n\nstr_extract(wildcard_example, wildcard)\n\n[1] \"s\"\n\nstr_extract(wildcard_example2, wildcard)\n\n[1] \" \""
+  },
+  {
+    "objectID": "regex.html#word-boundaries",
+    "href": "regex.html#word-boundaries",
+    "title": "Regex",
+    "section": "Word Boundaries",
+    "text": "Word Boundaries\nA \\b is used to match word boundaries, between a word character matched by \\\\w and a non-word character matched by \\\\W (or vice versa).\n\nsentence &lt;- \"The quick brown fox jumped over the lazy dog.\"\n\n# for example, this will match a word of any length ending in d\nword_boundaries &lt;- \"\\\\w*d\\\\b\"\n\nstr_match_all(sentence, word_boundaries)\n\n[[1]]\n     [,1]    \n[1,] \"jumped\""
+  },
+  {
+    "objectID": "regex.html#beginning-and-end",
+    "href": "regex.html#beginning-and-end",
+    "title": "Regex",
+    "section": "Beginning and end",
+    "text": "Beginning and end\nUse the ^ to indicate that an expression must occur at the beginning of a string, and use the $ to indicate it is at the end. For example, if I wanted to check how many sentences begin with “I”:\n\nsentences &lt;- c(\"I am writing to express my interest in the position at the company.\",\n               \"I am a recent graduate with experience in policy research interested in building a career focused on government accountability through data-driven policy.\",\n               \"I'm excited to learn more about the company.\",\n               \"Having taken classes on the subject, I am intrigued by the company's research.\")\n\nsentence_begins_w_i &lt;- \"^I\"\n\nstr_match(sentences, sentence_begins_w_i)\n\n     [,1]\n[1,] \"I\" \n[2,] \"I\" \n[3,] \"I\" \n[4,] NA  \n\n\nOr check which strings are a paragraph (end with a newline and valid punctuation):\n\nparagraphs &lt;- c(\"Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius.\\n\",\n                # note that the below string contains the valid pattern, but it is not at the end of the string\n                \"Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat.\\n Vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan.\",\n                \"Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum!\\n\")\n\nis_paragraph &lt;- \"[\\\\.\\\\?\\\\!]\\\\n$\"\n\nstr_match(paragraphs, is_paragraph)\n\n     [,1] \n[1,] \".\\n\"\n[2,] NA   \n[3,] \"!\\n\""
+  },
+  {
+    "objectID": "regex.html#making-quantifiers-non-greedy",
+    "href": "regex.html#making-quantifiers-non-greedy",
+    "title": "Regex",
+    "section": "Making quantifiers non-greedy",
+    "text": "Making quantifiers non-greedy\nQuantifiers like * and + are greedy, meaning that they will try to match as many characters as possible. To limit them, we can use ?. This is useful for situations where you want to find the smallest match possible, but also need to look for the possibility of longer patterns.\n\ngreedy_example &lt;- \"'hello'\"\n\ngreedy_pattern &lt;- \"h.*l\"\nnongreedy_pattern &lt;- \"h.*?l\"\n\nstr_extract(greedy_example, greedy_pattern)\n\n[1] \"hell\"\n\nstr_extract(greedy_example, nongreedy_pattern)\n\n[1] \"hel\""
+  },
+  {
+    "objectID": "regex.html#non-capturing-groups",
+    "href": "regex.html#non-capturing-groups",
+    "title": "Regex",
+    "section": "Non-Capturing Groups",
+    "text": "Non-Capturing Groups\nUse (?: ... ) to make a non-capturing group."
+  },
+  {
+    "objectID": "regex.html#positive-lookahead",
+    "href": "regex.html#positive-lookahead",
+    "title": "Regex",
+    "section": "Positive Lookahead",
+    "text": "Positive Lookahead\nA positive lookahead is structured as x(?=y), which matches “x” only if “x” is followed by “y”.\nIn the case below, we are only interested in currency amounts that are in USD:\n\ndollars &lt;-  c(\"100 USD\", \"80 CHF\", \"1,000 BRL\", \"1,000,000 USD\", \"currency is USD\")\n\ndollars_pattern &lt;- \"[1-9][\\\\d,]*(?= USD)\" # the first piece gets a number 1-9 (numbers that don't start with 0), then any number of digits 0-9 or a comma, then checks if the next text is \" USD\". \n\nstr_extract(dollars, dollars_pattern)\n\n[1] \"100\"       NA          NA          \"1,000,000\" NA"
+  },
+  {
+    "objectID": "regex.html#negative-lookahead",
+    "href": "regex.html#negative-lookahead",
+    "title": "Regex",
+    "section": "Negative Lookahead",
+    "text": "Negative Lookahead\nA negative lookahead is structured as x(?!y), which matches “x” only if “x” is followed by something other than “y”.\nIn the case below, we are only interested in values that are not in USD:\n\ndollars &lt;-  c(\"100 USD\", \"80 CHF\", \"1000 BRL\", \"1000000 USD\")\n\ndollars_pattern &lt;- \"\\\\b[1-9]\\\\d*\\\\b(?!\\\\sUSD)\"\n\nstr_extract(dollars, dollars_pattern)\n\n[1] NA     \"80\"   \"1000\" NA"
+  },
+  {
+    "objectID": "regex.html#positive-lookbehind",
+    "href": "regex.html#positive-lookbehind",
+    "title": "Regex",
+    "section": "Positive Lookbehind",
+    "text": "Positive Lookbehind\nStructured as (?&lt;=y)x, matches “x” only if “x” is preceded by “y”.\n\nsports_teams &lt;- c(\"San Francisco 49ers\", \"San Francisco Giants\", \"New York Giants\", \"SF Giants\")\n\nteams_pattern &lt;- \"\\\\b(SF|San Francisco)\\\\b\\\\s+Giants\"\n\nstr_extract(sports_teams, teams_pattern)\n\n[1] NA                     \"San Francisco Giants\" NA                    \n[4] \"SF Giants\""
+  },
+  {
+    "objectID": "regex.html#negative-lookbehind",
+    "href": "regex.html#negative-lookbehind",
+    "title": "Regex",
+    "section": "Negative Lookbehind",
+    "text": "Negative Lookbehind\nStructured as (?&lt;!y)x, matches “x” only if “x” is not preceded by “y”.\n\ncurrency_behind &lt;- c(\"€20\", \"$30\", \"€100\", \"¥30\")\n\ncurrency_pattern &lt;- \"(?&lt;!€)\\\\b\\\\d+\"\n\nstr_extract(currency_behind, currency_pattern)\n\n[1] NA   \"30\" NA   \"30\""
+  },
+  {
+    "objectID": "dplyr.html",
+    "href": "dplyr.html",
+    "title": "dplyr",
+    "section": "",
+    "text": "The select() function is used to keep or drop columns.\n\nlibrary(dplyr)\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\nlibrary(tidyverse)\n\nWarning: package 'ggplot2' was built under R version 4.4.3\n\n\n── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──\n✔ forcats   1.0.0     ✔ readr     2.1.5\n✔ ggplot2   4.0.1     ✔ stringr   1.5.1\n✔ lubridate 1.9.3     ✔ tibble    3.2.1\n✔ purrr     1.0.2     ✔ tidyr     1.3.1\n\n\n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\nℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors\n\ncolnames(starwars %&gt;% select(name, homeworld)) # here, we keep only the name and homeworld columns\n\n[1] \"name\"      \"homeworld\"\n\ncolnames(starwars %&gt;% select(-name, -homeworld)) # here, we get rid of the name and homeworld columns\n\n [1] \"height\"     \"mass\"       \"hair_color\" \"skin_color\" \"eye_color\" \n [6] \"birth_year\" \"sex\"        \"gender\"     \"species\"    \"films\"     \n[11] \"vehicles\"   \"starships\" \n\n\nThere are different selectors you can use to select a group of columns:\n\n: to select a range of consecutive columns\n! to negate a selection\nc() to combine selections\n& and | to select the intersection or union of variables\nstarts_with() select columns that start with a pattern\nends_with() select columns that end with a pattern\ncontains() select columns that contain a pattern\nmatches() select columns that match a pattern\nnum_range() match a numerical range\nall_of() matches variable names in a character vector, and all names must be present, otherwise an out-of-bounds error is thrown\nany_of() does the same as all_of(), except that no error is thrown for names that don’t exist\nwhere() applies a function to all variables and selects those for which the function returns TRUE\n\n\ncolnames(starwars %&gt;% select(height:birth_year)) # select all columns between height and birth_year\n\n[1] \"height\"     \"mass\"       \"hair_color\" \"skin_color\" \"eye_color\" \n[6] \"birth_year\"\n\ncolnames(starwars %&gt;% select(c(\"mass\", \"sex\"))) # select mass and sex\n\n[1] \"mass\" \"sex\" \n\ncolnames(starwars %&gt;% select(!c(\"mass\", \"sex\"))) # select all columns BUT mass and sex\n\n [1] \"name\"       \"height\"     \"hair_color\" \"skin_color\" \"eye_color\" \n [6] \"birth_year\" \"gender\"     \"homeworld\"  \"species\"    \"films\"     \n[11] \"vehicles\"   \"starships\" \n\ncolnames(starwars %&gt;% select(where(is.character) | where(is.integer))) # select columns that are character type or integer type\n\n[1] \"name\"       \"hair_color\" \"skin_color\" \"eye_color\"  \"sex\"       \n[6] \"gender\"     \"homeworld\"  \"species\"    \"height\"    \n\n\n\n# now we'll use the iris dataset to demonstrate some other examples\ncolnames(iris)\n\n[1] \"Sepal.Length\" \"Sepal.Width\"  \"Petal.Length\" \"Petal.Width\"  \"Species\"     \n\ncolnames(iris %&gt;% select(starts_with(\"Sepal\")))\n\n[1] \"Sepal.Length\" \"Sepal.Width\" \n\ncolnames(iris %&gt;% select(ends_with(\"Length\")))\n\n[1] \"Sepal.Length\" \"Petal.Length\"\n\n\n\nlibrary(nycflights13)\n\ncolnames(flights)\n\n [1] \"year\"           \"month\"          \"day\"            \"dep_time\"      \n [5] \"sched_dep_time\" \"dep_delay\"      \"arr_time\"       \"sched_arr_time\"\n [9] \"arr_delay\"      \"carrier\"        \"flight\"         \"tailnum\"       \n[13] \"origin\"         \"dest\"           \"air_time\"       \"distance\"      \n[17] \"hour\"           \"minute\"         \"time_hour\"     \n\ncolnames(flights %&gt;% select(contains(\"dep\")))\n\n[1] \"dep_time\"       \"sched_dep_time\" \"dep_delay\"     \n\ncolnames(flights %&gt;% select(matches(\"arr_+\")))\n\n[1] \"arr_time\"       \"sched_arr_time\" \"arr_delay\"     \n\ncols_to_select &lt;- c(\"month\", \"day\", \"year\", \"time\")\n\n# colnames(flights %&gt;% select(all_of(cols_to_select))) will throw an error because time doesn't exist\n\ncolnames(flights %&gt;% select(any_of(cols_to_select)))\n\n[1] \"month\" \"day\"   \"year\" \n\n\n\nexample_df &lt;- data.frame(\"X1\" = 1:10, \"X2\" = 11:20, \"X3\" = 21:30)\n\ncolnames(example_df %&gt;% select(num_range(\"X\", 1:2)))\n\n[1] \"X1\" \"X2\"\n\n\n\n\n\nIf you want to extract columns as vectors, use the pull() function.\n\nhead(starwars %&gt;% pull(name))\n\n[1] \"Luke Skywalker\" \"C-3PO\"          \"R2-D2\"          \"Darth Vader\"   \n[5] \"Leia Organa\"    \"Owen Lars\""
+  },
+  {
+    "objectID": "dplyr.html#sec-select",
+    "href": "dplyr.html#sec-select",
+    "title": "dplyr",
+    "section": "",
+    "text": "The select() function is used to keep or drop columns.\n\nlibrary(dplyr)\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\nlibrary(tidyverse)\n\nWarning: package 'ggplot2' was built under R version 4.4.3\n\n\n── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──\n✔ forcats   1.0.0     ✔ readr     2.1.5\n✔ ggplot2   4.0.1     ✔ stringr   1.5.1\n✔ lubridate 1.9.3     ✔ tibble    3.2.1\n✔ purrr     1.0.2     ✔ tidyr     1.3.1\n\n\n── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──\n✖ dplyr::filter() masks stats::filter()\n✖ dplyr::lag()    masks stats::lag()\nℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors\n\ncolnames(starwars %&gt;% select(name, homeworld)) # here, we keep only the name and homeworld columns\n\n[1] \"name\"      \"homeworld\"\n\ncolnames(starwars %&gt;% select(-name, -homeworld)) # here, we get rid of the name and homeworld columns\n\n [1] \"height\"     \"mass\"       \"hair_color\" \"skin_color\" \"eye_color\" \n [6] \"birth_year\" \"sex\"        \"gender\"     \"species\"    \"films\"     \n[11] \"vehicles\"   \"starships\" \n\n\nThere are different selectors you can use to select a group of columns:\n\n: to select a range of consecutive columns\n! to negate a selection\nc() to combine selections\n& and | to select the intersection or union of variables\nstarts_with() select columns that start with a pattern\nends_with() select columns that end with a pattern\ncontains() select columns that contain a pattern\nmatches() select columns that match a pattern\nnum_range() match a numerical range\nall_of() matches variable names in a character vector, and all names must be present, otherwise an out-of-bounds error is thrown\nany_of() does the same as all_of(), except that no error is thrown for names that don’t exist\nwhere() applies a function to all variables and selects those for which the function returns TRUE\n\n\ncolnames(starwars %&gt;% select(height:birth_year)) # select all columns between height and birth_year\n\n[1] \"height\"     \"mass\"       \"hair_color\" \"skin_color\" \"eye_color\" \n[6] \"birth_year\"\n\ncolnames(starwars %&gt;% select(c(\"mass\", \"sex\"))) # select mass and sex\n\n[1] \"mass\" \"sex\" \n\ncolnames(starwars %&gt;% select(!c(\"mass\", \"sex\"))) # select all columns BUT mass and sex\n\n [1] \"name\"       \"height\"     \"hair_color\" \"skin_color\" \"eye_color\" \n [6] \"birth_year\" \"gender\"     \"homeworld\"  \"species\"    \"films\"     \n[11] \"vehicles\"   \"starships\" \n\ncolnames(starwars %&gt;% select(where(is.character) | where(is.integer))) # select columns that are character type or integer type\n\n[1] \"name\"       \"hair_color\" \"skin_color\" \"eye_color\"  \"sex\"       \n[6] \"gender\"     \"homeworld\"  \"species\"    \"height\"    \n\n\n\n# now we'll use the iris dataset to demonstrate some other examples\ncolnames(iris)\n\n[1] \"Sepal.Length\" \"Sepal.Width\"  \"Petal.Length\" \"Petal.Width\"  \"Species\"     \n\ncolnames(iris %&gt;% select(starts_with(\"Sepal\")))\n\n[1] \"Sepal.Length\" \"Sepal.Width\" \n\ncolnames(iris %&gt;% select(ends_with(\"Length\")))\n\n[1] \"Sepal.Length\" \"Petal.Length\"\n\n\n\nlibrary(nycflights13)\n\ncolnames(flights)\n\n [1] \"year\"           \"month\"          \"day\"            \"dep_time\"      \n [5] \"sched_dep_time\" \"dep_delay\"      \"arr_time\"       \"sched_arr_time\"\n [9] \"arr_delay\"      \"carrier\"        \"flight\"         \"tailnum\"       \n[13] \"origin\"         \"dest\"           \"air_time\"       \"distance\"      \n[17] \"hour\"           \"minute\"         \"time_hour\"     \n\ncolnames(flights %&gt;% select(contains(\"dep\")))\n\n[1] \"dep_time\"       \"sched_dep_time\" \"dep_delay\"     \n\ncolnames(flights %&gt;% select(matches(\"arr_+\")))\n\n[1] \"arr_time\"       \"sched_arr_time\" \"arr_delay\"     \n\ncols_to_select &lt;- c(\"month\", \"day\", \"year\", \"time\")\n\n# colnames(flights %&gt;% select(all_of(cols_to_select))) will throw an error because time doesn't exist\n\ncolnames(flights %&gt;% select(any_of(cols_to_select)))\n\n[1] \"month\" \"day\"   \"year\" \n\n\n\nexample_df &lt;- data.frame(\"X1\" = 1:10, \"X2\" = 11:20, \"X3\" = 21:30)\n\ncolnames(example_df %&gt;% select(num_range(\"X\", 1:2)))\n\n[1] \"X1\" \"X2\""
+  },
+  {
+    "objectID": "dplyr.html#pull",
+    "href": "dplyr.html#pull",
+    "title": "dplyr",
+    "section": "",
+    "text": "If you want to extract columns as vectors, use the pull() function.\n\nhead(starwars %&gt;% pull(name))\n\n[1] \"Luke Skywalker\" \"C-3PO\"          \"R2-D2\"          \"Darth Vader\"   \n[5] \"Leia Organa\"    \"Owen Lars\""
+  },
+  {
+    "objectID": "dplyr.html#sec-by-condition",
+    "href": "dplyr.html#sec-by-condition",
+    "title": "dplyr",
+    "section": "By Condition",
+    "text": "By Condition\nThe primary function you will use to keep or drop observations is filter(). Some expressions to keep in mind with filtering are:\n\n!= checks for inequalities, == checks for equivalence, &lt; and &lt;= for less than and less than or equal (and &gt; and &gt;= for greater than)\n! for the complement, & for intersection, and | for union\nis.na() to check if values are NA\n%in% to check if a value is in a vector\n\n\nhead(starwars %&gt;% \n       select(name, homeworld) %&gt;%\n       filter(homeworld == \"Tatooine\")) # keep only characters who are from Tatooine\n\n\n  \n\n\nhead(starwars %&gt;% \n       filter(!is.na(birth_year))) # keep only characters whose birth years we know\n\n\n  \n\n\nhead(starwars %&gt;%\n       drop_na()) # you can also use the drop_na function from tidyr to get rid of NAs \n\n\n  \n\n\nhead(starwars %&gt;%\n       filter(mass &gt; 100)) # keep only characters who are heavier than 100\n\n\n  \n\n\nhead(starwars %&gt;%\n       filter(mass &lt; 100 & height &lt; 75)) # keep only characters who weigh less than 100 and are shorter than 75\n\n\n  \n\n\nhead(starwars %&gt;%\n       filter(homeworld %in% c(\"Naboo\", \"Alderaan\"))) # keep characters whose homeworld is in the vector\n\n\n  \n\n\nhead(starwars %&gt;%\n       filter(!homeworld %in% c(\"Naboo\", \"Alderaan\"))) # keep characters whose homeworld is NOT in the vector"
+  },
+  {
+    "objectID": "dplyr.html#unique-observations",
+    "href": "dplyr.html#unique-observations",
+    "title": "dplyr",
+    "section": "Unique Observations",
+    "text": "Unique Observations\nTo keep only observations that are unique (remove duplicates), use distinct().\n\nhead(starwars %&gt;% distinct(homeworld)) # you can specify specific columns\n\n\n  \n\n\nset.seed(123)\nrandomly_selected_characters &lt;- starwars %&gt;% slice_sample(n = 20, replace = TRUE)\n\nnrow(randomly_selected_characters)\n\n[1] 20\n\nnrow(randomly_selected_characters %&gt;% distinct()) # removed 3 duplicates\n\n[1] 17"
+  },
+  {
+    "objectID": "dplyr.html#slicing",
+    "href": "dplyr.html#slicing",
+    "title": "dplyr",
+    "section": "Slicing",
+    "text": "Slicing\nTo select rows by index, use slice(). To select randomly, use slice_sample(). Use slice_min() and slice_max() to select the maximum and minimum n values by a particular column. slice_head() and slice_tail() allow you to select the first or last n rows.\n\nstarwars %&gt;% \n  slice(1:5)\n\n\n  \n\n\nstarwars %&gt;% \n  slice_sample(n = 5)\n\n\n  \n\n\nstarwars %&gt;% \n  slice_min(height, n = 5)\n\n\n  \n\n\nstarwars %&gt;% \n  slice_max(height, n = 5)\n\n\n  \n\n\nstarwars %&gt;% \n  slice_head(n = 5)\n\n\n  \n\n\nstarwars %&gt;% \n  slice_tail(n = 5)"
+  },
+  {
+    "objectID": "dplyr.html#rearrange-column-order",
+    "href": "dplyr.html#rearrange-column-order",
+    "title": "dplyr",
+    "section": "Rearrange column order",
+    "text": "Rearrange column order\nUse relocate() to move columns around:\n\nhead(starwars %&gt;% \n  relocate(birth_year, .before = NULL, .after= name))"
+  },
+  {
+    "objectID": "dplyr.html#rearrange-observations",
+    "href": "dplyr.html#rearrange-observations",
+    "title": "dplyr",
+    "section": "Rearrange observations",
+    "text": "Rearrange observations\nUse arrange() with or without desc() to sort a dataframe in ascending or descending order, respectively (either automatically or by a specific column).\n\nhead(starwars %&gt;% \n       arrange(birth_year) %&gt;% \n       relocate(birth_year, .after= name))\n\n\n  \n\n\nhead(starwars %&gt;% \n       arrange(desc(birth_year)) %&gt;% \n       relocate(birth_year, .after= name))"
+  },
+  {
+    "objectID": "dplyr.html#sec-summarize-data",
+    "href": "dplyr.html#sec-summarize-data",
+    "title": "dplyr",
+    "section": "Summarize Data",
+    "text": "Summarize Data\n\nhead(starwars %&gt;% \n  group_by(homeworld) %&gt;%\n  summarize(avg_height = mean(height))) # gives you the mean height on each homeworld\n\n\n  \n\n\nhead(starwars %&gt;%\n       group_by(homeworld, species) %&gt;%\n       summarize(avg_height = mean(height))) # you can also group by multiple variables\n\n`summarise()` has grouped output by 'homeworld'. You can override using the\n`.groups` argument.\n\n\n\n  \n\n\n# also use last(), first(), and nth() to get that observation within each\nhead(starwars %&gt;% \n       group_by(homeworld) %&gt;% \n       arrange(birth_year) %&gt;% # arrange by birth year\n       filter(n() &gt; 2) %&gt;% # only show planets with more than 1 character\n       summarize(youngest = first(name))) # show the name of the first observation"
+  },
+  {
+    "objectID": "dplyr.html#sec-count-data",
+    "href": "dplyr.html#sec-count-data",
+    "title": "dplyr",
+    "section": "Count Data",
+    "text": "Count Data\nTo count data, you can either use the summarize() function or the count() function.\n\nhead(starwars %&gt;%\n       group_by(homeworld) %&gt;%\n       summarize(num_characters = n()))\n\n\n  \n\n\nhead(starwars %&gt;%\n       count(homeworld, sort = TRUE))"
+  },
+  {
+    "objectID": "dplyr.html#sec-mutation",
+    "href": "dplyr.html#sec-mutation",
+    "title": "dplyr",
+    "section": "Mutation",
+    "text": "Mutation\nThe mutate() function allows you to apply a variety of functions to create new variables or change existing ones.\n\nBasic operations\nYou can perform basic operations between columns\n\n# for example, calculate character BMI (mass/height in m^2)\nhead(starwars %&gt;% \n       mutate(bmi = mass/(height/100)^2) %&gt;%\n       select(name, bmi))\n\n\n  \n\n\n# or, create variables based on if-else statements\nhead(starwars %&gt;%\n       mutate(height_category = ifelse(height &gt; 183, \"Tall\", \"Short\")) %&gt;%\n       select(name, height, height_category))\n\n\n  \n\n\n\n\n\nOffset\nLag or lead elements based on the previous/next values. This is helpful for calculations such as percent change\n\nusairmiles &lt;- data.frame(\"year\" = 1937:1960, \"miles\" = as.vector(airmiles))\n\nhead(usairmiles %&gt;% mutate(last_month = dplyr::lag(miles),\n                      next_month = dplyr::lead(miles)))\n\n\n  \n\n\n\n\n\nCumulative Calculations\nCumulative functions can be useful for calculating sums and other statistics over time.\n\nhead(usairmiles %&gt;% mutate(cumsum(miles))) # sums over time\n\n\n  \n\n\nhead(usairmiles %&gt;% mutate(cummean(miles))) # calculates avg over time\n\n\n  \n\n\nhead(usairmiles %&gt;% mutate(cummax(miles))) # saves the max so far\n\n\n  \n\n\nhead(usairmiles %&gt;% mutate(cummin(miles))) \n\n\n  \n\n\nhead(usairmiles %&gt;% mutate(cumprod(miles)))\n\n\n  \n\n\n\ncumall() and cumany() return boolean vectors that are TRUE/FALSE until the first instance where a condition is TRUE.\n\n# cumall() creates a vector that is TRUE until it finds the first false:\nhead(usairmiles %&gt;% mutate(cumall(miles &lt; 1000)))\n\n\n  \n\n\n# cumany() creates a vector that is FALSE until it finds the first TRUE:\nhead(usairmiles %&gt;% mutate(cumany(miles &gt; 1000)))\n\n\n  \n\n\n\n\n\nVectorized if-else\nOftentimes, you will have situations where your data has multiple conditions. Using the ifelse() function would require you to have multiple nested if-else statements. Instead, you can use the case_when() function to mutate your data.\n\nhead(starwars %&gt;%\n       mutate(height_category = case_when(between(height, 170, 183) ~ \"Average\",\n                                          height &gt;= 183 ~ \"Tall\",\n                                          height &lt;= 170 ~ \"Average\", \n                                          .default = NA)) %&gt;%\n       select(name, height, height_category), 5)\n\n\n  \n\n\n\nSee this cheat sheet for other helpful functions for mutations."
+  },
+  {
+    "objectID": "dplyr.html#sec-long-and-wide-data",
+    "href": "dplyr.html#sec-long-and-wide-data",
+    "title": "dplyr",
+    "section": "Long and Wide Data",
+    "text": "Long and Wide Data\nWide data has a column per “group”, whereas long data has a “group” column. For example, a time series would have a column per year as a wide dataset, and a column called year as a long dataset.\nTo convert a dataset from wide to long, use pivot_longer():\n\n# this is wide\nhead(as.data.frame(USPersonalExpenditure))\n\n\n  \n\n\n# make it long\nexp_long &lt;- as.data.frame(USPersonalExpenditure) %&gt;% tibble::rownames_to_column(\"type\") %&gt;%\n  # use all but the type column to combine into 1\n  pivot_longer(-type,  \n               # the columns we combine now are in a \"year\" column\n               names_to = \"year\", \n               # the values from those columns go into this column\n               values_to = \"expenditure\")\nhead(exp_long)\n\n\n  \n\n\n\nTo make a dataset wide, use pivot_wider():\n\nSeatbelts2 &lt;- data.frame(Year=floor(time(Seatbelts)),\nMonth=factor(cycle(Seatbelts),\nlabels=month.abb), Seatbelts) %&gt;% select(Month, Year, DriversKilled)\nhead(Seatbelts2)\n\n\n  \n\n\nSeatbelts_wide &lt;- Seatbelts2 %&gt;% pivot_wider(names_from = Month, values_from = DriversKilled)\nhead(Seatbelts_wide)"
+  },
+  {
+    "objectID": "dplyr.html#merging-on-common-columns",
+    "href": "dplyr.html#merging-on-common-columns",
+    "title": "dplyr",
+    "section": "Merging On Common Columns",
+    "text": "Merging On Common Columns\nTo join datasets that share columns in common, we use different types of joins to merge the datasets based on specified columns.\n\nratings &lt;- c(6.6, 7.6, 8.6, 8.7, 8.3, 7.7, 6.8, 6.3)\nmovies &lt;- c(\"Attack of the Clones\", \"Revenge of the Sith\",\n            \"A New Hope\", \"The Empire Strikes Back\", \"Return of the Jedi\",\n            \"The Force Awakens\", \"The Last Jedi\", \"The Rise of Skywalker\")\n\nstarwars_movies &lt;- data.frame(movies, ratings)\n\n# to expand the \"films\" column in starwars, we will use unnest() from tidyr\n\n# this now has a row for each character's appearance in each movie\nstarwars2 &lt;- starwars %&gt;% \n  unnest(films)\n\n# to create a simple example, I am only taking the first row per movie (so 7 rows)\nstarwars3 &lt;- starwars2 %&gt;% \n  select(name, films) %&gt;%\n  group_by(films) %&gt;%\n  summarize(name = first(name)) \n\nstarwars3\n\n\n  \n\n\nstarwars_movies\n\n\n  \n\n\n\n\nLeft and Right Joins\nA left join keeps all of the observations from the left-hand (first) dataset, and a right join keeps all of the observations from the right-hand (or second) dataset.\n\nunique(starwars2$films) # this dataset does not have 2 of the movies\n\n[1] \"A New Hope\"              \"The Empire Strikes Back\"\n[3] \"Return of the Jedi\"      \"Revenge of the Sith\"    \n[5] \"The Force Awakens\"       \"The Phantom Menace\"     \n[7] \"Attack of the Clones\"   \n\nunique(starwars_movies$movies) # this data set has all but The Phantom Menace\n\n[1] \"Attack of the Clones\"    \"Revenge of the Sith\"    \n[3] \"A New Hope\"              \"The Empire Strikes Back\"\n[5] \"Return of the Jedi\"      \"The Force Awakens\"      \n[7] \"The Last Jedi\"           \"The Rise of Skywalker\"  \n\n# when we left join, we will keep all rows from starwars3\n# any films that are in starwars3 but not in starwars_movies will have NA values\nstarwars3 %&gt;% left_join(starwars_movies, by = c(\"films\" = \"movies\"))\n\n\n  \n\n\n# if we right join instead, you'll see that it keeps all movies in starwars_movies\n# and leaves all character names from movies that starwars3 hdoesn't have NA\nstarwars3 %&gt;% right_join(starwars_movies, by = c(\"films\" = \"movies\"))\n\n\n  \n\n\n\n\n\nInner Join\nSometimes it’s ok to leave NAs in certain columns as you want to keep as much data from the “dominant” (left or right) dataset that you’re joining on, but other times you don’t want missing data. Use an inner join in this case, which will only keep rows that both datasets have.\n\nstarwars3 %&gt;% inner_join(starwars_movies, by = c(\"films\" = \"movies\"))\n\n\n  \n\n\n\n\n\nFull Join\nAn outer or full join keeps all rows from both datasets and often results in many NAs.\n\nstarwars3 %&gt;% full_join(starwars_movies, by = c(\"films\" = \"movies\"))\n\n\n  \n\n\n\n\n\nJoin on multiple columns\n\nweather_at_dest &lt;- flights %&gt;% \n  inner_join(weather, \n             by = c(\"time_hour\", \"origin\"))\n\n# you can also use join_by(time_hour, origin), join_by(\"columnA\" == \"columna\", \"columnB\" == \"columnb\")"
+  },
+  {
+    "objectID": "dplyr.html#adding-new-rows",
+    "href": "dplyr.html#adding-new-rows",
+    "title": "dplyr",
+    "section": "Adding New Rows",
+    "text": "Adding New Rows\nTo add new rows to a dataset, you can use the bind_rows() function to join two datasets with the same columns.\n\ndf1 &lt;- data.frame(\"id\" = c(\"A\", \"B\", \"C\"),\n                  \"val\" = c(1, 2, 3))\n\ndf2 &lt;- data.frame(\"id\" = c(\"D\", \"E\", \"F\"),\n                  \"val\" = c(4, 5, 6))\n\ndf1 %&gt;% bind_rows(df2)\n\n\n  \n\n\n\nThis is particularly helpful when you have a list of dataframes:\n\ndf3 &lt;- data.frame(\"id\" = c(\"G\", \"H\", \"I\"),\n                  \"val\" = c(7, 8, 9))\n\ndf_list &lt;- list(df1, df2, df3)\n\nbind_rows(df_list)"
+  },
+  {
+    "objectID": "WranglingExample.html",
+    "href": "WranglingExample.html",
+    "title": "Example of Data Wrangling in R",
+    "section": "",
+    "text": "For this document, we will be using a dataset scraped from IMDB’s top Netflix movies and TV shows, obtained from Kaggle.\n\n# Set up\ncat(\"\\014\") # clear the console\n\nrm(list=ls()) # clear the environment\nset.seed(1738) # set seed for any random operations\n\n\n# Load in our dataset\nnetflix &lt;- read.csv(\"https://raw.githubusercontent.com/biancaschutz/rguides/refs/heads/main/movies.csv\")\n\n\n\nFirst, we want to understand what our data contains (column names, dimensions, data types, etc.).\n\n# str() shows us the datatype and first observations of all columns\nstr(netflix)\n\n'data.frame':   9999 obs. of  9 variables:\n $ MOVIES  : chr  \"Blood Red Sky\" \"Masters of the Universe: Revelation\" \"The Walking Dead\" \"Rick and Morty\" ...\n $ YEAR    : chr  \"(2021)\" \"(2021– )\" \"(2010–2022)\" \"(2013– )\" ...\n $ GENRE   : chr  \"\\nAction, Horror, Thriller            \" \"\\nAnimation, Action, Adventure            \" \"\\nDrama, Horror, Thriller            \" \"\\nAnimation, Adventure, Comedy            \" ...\n $ RATING  : num  6.1 5 8.2 9.2 NA 7.6 6.8 8.6 7.9 7.4 ...\n $ ONE.LINE: chr  \"\\nA woman with a mysterious illness is forced into action when a group of terrorists attempt to hijack a transa\"| __truncated__ \"\\nThe war for Eternia begins again in what may be the final battle between He-Man and Skeletor. A new animated \"| __truncated__ \"\\nSheriff Deputy Rick Grimes wakes up from a coma to learn the world is in ruins and must lead a group of survi\"| __truncated__ \"\\nAn animated series that follows the exploits of a super scientist and his not-so-bright grandson.\" ...\n $ STARS   : chr  \"\\n    Director:\\nPeter Thorwarth\\n| \\n    Stars:\\nPeri Baumeister, \\nCarl Anton Koch, \\nAlexander Scheer, \\nKais Setti\\n\" \"\\n            \\n    Stars:\\nChris Wood, \\nSarah Michelle Gellar, \\nLena Headey, \\nMark Hamill\\n\" \"\\n            \\n    Stars:\\nAndrew Lincoln, \\nNorman Reedus, \\nMelissa McBride, \\nLauren Cohan\\n\" \"\\n            \\n    Stars:\\nJustin Roiland, \\nChris Parnell, \\nSpencer Grammer, \\nSarah Chalke\\n\" ...\n $ VOTES   : chr  \"21,062\" \"17,870\" \"885,805\" \"414,849\" ...\n $ RunTime : int  121 25 44 23 NA 50 110 53 30 44 ...\n $ Gross   : chr  \"\" \"\" \"\" \"\" ...\n\n# Another good function to use is head(), which will show you the X first rows in a dataset\nhead(netflix, 5)\n\n\n  \n\n\n# dim will give you the number of rows, and then columns\ndim(netflix) \n\n[1] 9999    9\n\n# nrow gives you just the number of rows\nnrow(netflix) \n\n[1] 9999\n\n# ncol gives you just the number of columns\nncol(netflix)\n\n[1] 9\n\n\nHere, we can see that we have several numeric/date columns that are character data, not numeric. That is one aspect we will need to fix when cleaning the dataset. We also have messy columns like the STARS column, which features a list of the director and actors.\n\n\n\nAnother aspect we want to check is how much data is missing.\n\nsum(is.na(netflix)) # this will count the number of NAs in our dataset, overall\n\n[1] 4778\n\ncolSums(is.na(netflix)) # this will count the number of NAs per column\n\n  MOVIES     YEAR    GENRE   RATING ONE.LINE    STARS    VOTES  RunTime \n       0        0        0     1820        0        0        0     2958 \n   Gross \n       0 \n\n\nBased on this, we can see that RATING and RunTime are missing data. However, note that our character columns have no missing data. To verify this, we can check if there are empty text cells:\n\ncolSums(netflix == \"\")\n\n  MOVIES     YEAR    GENRE   RATING ONE.LINE    STARS    VOTES  RunTime \n       0      644       80       NA        0        0     1820       NA \n   Gross \n    9539 \n\n\nWe can see that most rows are missing from the Gross column, and there are also many missing from Year and VOTES.\n\nhist(colSums(netflix == \"\" | is.na(netflix)), main = \"Missing Observations in Movies Dataset\", xlab = \"\")\n\n\n\n\n\n\n\n\nWhich rows you remove because of missing data depends on what you need from the data and what you are analyzing. There will also be situations where you can fill in missing data with the mean, median, or other values as appropriate.\nFor example, here, we will remove any rows that are missing YEAR or RATING, but keep rows that are missing Gross, Genre, and Runtime.\n\n\n\nAnother important aspect of data exploration is visualizing distributions of columns. We did a bit of this with colSums() and looking at missing data, but we can do more, such as seeing unique values in a column or the distribution of a numeric variable.\n\n\nHere, our YEAR column is currently a character/string column, meaning it is quite messy. Because of this, table(netflix$YEAR) prints over 400 different values for year. While it’s commented out because it’s messy, it’s still important to run it and examine. We see that there are non-year values in the column, like roman numerals.\n\n#table(netflix$YEAR)\n\n\n\n\n\n# average\npaste0(\"The mean rating of Netflix movies and series is \", round(mean(netflix$RATING), 1), \"/10\")\n\n[1] \"The mean rating of Netflix movies and series is NA/10\"\n\n# median\npaste0(\"The mean rating of Netflix movies and series is \", round(median(netflix$RATING), 1), \"/10\")\n\n[1] \"The mean rating of Netflix movies and series is NA/10\"\n\n# variance\npaste0(\"The variance of Netflix movies and series ratings is \", round(var(netflix$RATING), 1), \"/10\")\n\n[1] \"The variance of Netflix movies and series ratings is NA/10\"\n\n# standard deviation\npaste0(\"The standard deviation of Netflix movies and series ratings is \", round(sd(netflix$RATING), 1), \"/10\")\n\n[1] \"The standard deviation of Netflix movies and series ratings is NA/10\"\n\n# IQR\npaste0(\"The IQR of Netflix movies and series ratings is \", round(IQR(netflix$RATING, na.rm = TRUE), 1), \"/10\")\n\n[1] \"The IQR of Netflix movies and series ratings is 1.6/10\"\n\n# range\nround(range(netflix$RATING), 1)\n\n[1] NA NA\n\n# you can also get the min and max\nround(min(netflix$RATING), 1)\n\n[1] NA\n\nround(max(netflix$RATING), 1)\n\n[1] NA\n\n# the summary function gives you many of those in 1 summary:\nsummary(netflix$RATING)\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's \n  1.100   6.200   7.100   6.921   7.800   9.900    1820 \n\n# you can also find where the max and min are\npaste(\"The movie/series with the lowest rating is\", netflix$MOVIE[which.min(netflix$RATING)])\n\n[1] \"The movie/series with the lowest rating is Raketsonyeondan\"\n\npaste(\"The movie/series with the highest rating is\", netflix$MOVIE[which.max(netflix$RATING)])\n\n[1] \"The movie/series with the highest rating is  BoJack Horseman\"\n\n\nWe can also visualize the distribution of numeric columns with a histogram:\n\nhist(netflix$RATING)\n\n\n\n\n\n\n\n\nWhat you explore in your dataset is determined by the questions you’re interested in answering, how messy your data is, and other factors.\nNote that once you have cleaned your data, it’s important to continue to explore it to verify you have sufficiently cleaned the data and examine patterns that you couldn’t before."
+  },
+  {
+    "objectID": "WranglingExample.html#structure",
+    "href": "WranglingExample.html#structure",
+    "title": "Example of Data Wrangling in R",
+    "section": "",
+    "text": "First, we want to understand what our data contains (column names, dimensions, data types, etc.).\n\n# str() shows us the datatype and first observations of all columns\nstr(netflix)\n\n'data.frame':   9999 obs. of  9 variables:\n $ MOVIES  : chr  \"Blood Red Sky\" \"Masters of the Universe: Revelation\" \"The Walking Dead\" \"Rick and Morty\" ...\n $ YEAR    : chr  \"(2021)\" \"(2021– )\" \"(2010–2022)\" \"(2013– )\" ...\n $ GENRE   : chr  \"\\nAction, Horror, Thriller            \" \"\\nAnimation, Action, Adventure            \" \"\\nDrama, Horror, Thriller            \" \"\\nAnimation, Adventure, Comedy            \" ...\n $ RATING  : num  6.1 5 8.2 9.2 NA 7.6 6.8 8.6 7.9 7.4 ...\n $ ONE.LINE: chr  \"\\nA woman with a mysterious illness is forced into action when a group of terrorists attempt to hijack a transa\"| __truncated__ \"\\nThe war for Eternia begins again in what may be the final battle between He-Man and Skeletor. A new animated \"| __truncated__ \"\\nSheriff Deputy Rick Grimes wakes up from a coma to learn the world is in ruins and must lead a group of survi\"| __truncated__ \"\\nAn animated series that follows the exploits of a super scientist and his not-so-bright grandson.\" ...\n $ STARS   : chr  \"\\n    Director:\\nPeter Thorwarth\\n| \\n    Stars:\\nPeri Baumeister, \\nCarl Anton Koch, \\nAlexander Scheer, \\nKais Setti\\n\" \"\\n            \\n    Stars:\\nChris Wood, \\nSarah Michelle Gellar, \\nLena Headey, \\nMark Hamill\\n\" \"\\n            \\n    Stars:\\nAndrew Lincoln, \\nNorman Reedus, \\nMelissa McBride, \\nLauren Cohan\\n\" \"\\n            \\n    Stars:\\nJustin Roiland, \\nChris Parnell, \\nSpencer Grammer, \\nSarah Chalke\\n\" ...\n $ VOTES   : chr  \"21,062\" \"17,870\" \"885,805\" \"414,849\" ...\n $ RunTime : int  121 25 44 23 NA 50 110 53 30 44 ...\n $ Gross   : chr  \"\" \"\" \"\" \"\" ...\n\n# Another good function to use is head(), which will show you the X first rows in a dataset\nhead(netflix, 5)\n\n\n  \n\n\n# dim will give you the number of rows, and then columns\ndim(netflix) \n\n[1] 9999    9\n\n# nrow gives you just the number of rows\nnrow(netflix) \n\n[1] 9999\n\n# ncol gives you just the number of columns\nncol(netflix)\n\n[1] 9\n\n\nHere, we can see that we have several numeric/date columns that are character data, not numeric. That is one aspect we will need to fix when cleaning the dataset. We also have messy columns like the STARS column, which features a list of the director and actors."
+  },
+  {
+    "objectID": "WranglingExample.html#missing-data",
+    "href": "WranglingExample.html#missing-data",
+    "title": "Example of Data Wrangling in R",
+    "section": "",
+    "text": "Another aspect we want to check is how much data is missing.\n\nsum(is.na(netflix)) # this will count the number of NAs in our dataset, overall\n\n[1] 4778\n\ncolSums(is.na(netflix)) # this will count the number of NAs per column\n\n  MOVIES     YEAR    GENRE   RATING ONE.LINE    STARS    VOTES  RunTime \n       0        0        0     1820        0        0        0     2958 \n   Gross \n       0 \n\n\nBased on this, we can see that RATING and RunTime are missing data. However, note that our character columns have no missing data. To verify this, we can check if there are empty text cells:\n\ncolSums(netflix == \"\")\n\n  MOVIES     YEAR    GENRE   RATING ONE.LINE    STARS    VOTES  RunTime \n       0      644       80       NA        0        0     1820       NA \n   Gross \n    9539 \n\n\nWe can see that most rows are missing from the Gross column, and there are also many missing from Year and VOTES.\n\nhist(colSums(netflix == \"\" | is.na(netflix)), main = \"Missing Observations in Movies Dataset\", xlab = \"\")\n\n\n\n\n\n\n\n\nWhich rows you remove because of missing data depends on what you need from the data and what you are analyzing. There will also be situations where you can fill in missing data with the mean, median, or other values as appropriate.\nFor example, here, we will remove any rows that are missing YEAR or RATING, but keep rows that are missing Gross, Genre, and Runtime."
+  },
+  {
+    "objectID": "WranglingExample.html#distributions",
+    "href": "WranglingExample.html#distributions",
+    "title": "Example of Data Wrangling in R",
+    "section": "",
+    "text": "Another important aspect of data exploration is visualizing distributions of columns. We did a bit of this with colSums() and looking at missing data, but we can do more, such as seeing unique values in a column or the distribution of a numeric variable.\n\n\nHere, our YEAR column is currently a character/string column, meaning it is quite messy. Because of this, table(netflix$YEAR) prints over 400 different values for year. While it’s commented out because it’s messy, it’s still important to run it and examine. We see that there are non-year values in the column, like roman numerals.\n\n#table(netflix$YEAR)\n\n\n\n\n\n# average\npaste0(\"The mean rating of Netflix movies and series is \", round(mean(netflix$RATING), 1), \"/10\")\n\n[1] \"The mean rating of Netflix movies and series is NA/10\"\n\n# median\npaste0(\"The mean rating of Netflix movies and series is \", round(median(netflix$RATING), 1), \"/10\")\n\n[1] \"The mean rating of Netflix movies and series is NA/10\"\n\n# variance\npaste0(\"The variance of Netflix movies and series ratings is \", round(var(netflix$RATING), 1), \"/10\")\n\n[1] \"The variance of Netflix movies and series ratings is NA/10\"\n\n# standard deviation\npaste0(\"The standard deviation of Netflix movies and series ratings is \", round(sd(netflix$RATING), 1), \"/10\")\n\n[1] \"The standard deviation of Netflix movies and series ratings is NA/10\"\n\n# IQR\npaste0(\"The IQR of Netflix movies and series ratings is \", round(IQR(netflix$RATING, na.rm = TRUE), 1), \"/10\")\n\n[1] \"The IQR of Netflix movies and series ratings is 1.6/10\"\n\n# range\nround(range(netflix$RATING), 1)\n\n[1] NA NA\n\n# you can also get the min and max\nround(min(netflix$RATING), 1)\n\n[1] NA\n\nround(max(netflix$RATING), 1)\n\n[1] NA\n\n# the summary function gives you many of those in 1 summary:\nsummary(netflix$RATING)\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's \n  1.100   6.200   7.100   6.921   7.800   9.900    1820 \n\n# you can also find where the max and min are\npaste(\"The movie/series with the lowest rating is\", netflix$MOVIE[which.min(netflix$RATING)])\n\n[1] \"The movie/series with the lowest rating is Raketsonyeondan\"\n\npaste(\"The movie/series with the highest rating is\", netflix$MOVIE[which.max(netflix$RATING)])\n\n[1] \"The movie/series with the highest rating is  BoJack Horseman\"\n\n\nWe can also visualize the distribution of numeric columns with a histogram:\n\nhist(netflix$RATING)\n\n\n\n\n\n\n\n\nWhat you explore in your dataset is determined by the questions you’re interested in answering, how messy your data is, and other factors.\nNote that once you have cleaned your data, it’s important to continue to explore it to verify you have sufficiently cleaned the data and examine patterns that you couldn’t before."
+  },
+  {
+    "objectID": "WranglingExample.html#subsetting-your-data",
+    "href": "WranglingExample.html#subsetting-your-data",
+    "title": "Example of Data Wrangling in R",
+    "section": "Subsetting your data",
+    "text": "Subsetting your data\n\nMissing data\nFirst, let’s reduce the amount of data we’re dealing with based on the missing data we said we’d remove, YEAR and RATING.\n\nlibrary(dplyr)\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\nnetflix &lt;- netflix %&gt;% \n  filter(!is.na(YEAR), !is.na(RATING))\n\ndim(netflix) # we lost less than 2000 observations\n\n[1] 8179    9"
+  },
+  {
+    "objectID": "WranglingExample.html#string-manipulation",
+    "href": "WranglingExample.html#string-manipulation",
+    "title": "Example of Data Wrangling in R",
+    "section": "String Manipulation",
+    "text": "String Manipulation\n\nConverting the YEAR column to numeric\nFor the YEAR column, we want to remove all non-numeric or “-” characters.\n\nlibrary(stringr)\nyear_only &lt;- \"[^0-9\\\\–]\"\n\n# first, let's make sure this string pattern works the way we want it to\n\nhead(str_extract_all(netflix$YEAR, year_only))\n\n[[1]]\n[1] \"(\" \")\"\n\n[[2]]\n[1] \"(\" \" \" \")\"\n\n[[3]]\n[1] \"(\" \")\"\n\n[[4]]\n[1] \"(\" \" \" \")\"\n\n[[5]]\n[1] \"(\" \" \" \")\"\n\n[[6]]\n[1] \"(\" \")\"\n\n\n\n# now, let's remove the extra characters\nnetflix &lt;- netflix %&gt;% mutate(YEAR_fixed = str_remove_all(YEAR, year_only))\n\n# this shows us that the years now only feature numbers and a hyphen for TV shows\nhead(netflix$YEAR_fixed)\n\n[1] \"2021\"      \"2021–\"     \"2010–2022\" \"2013–\"     \"2020–\"     \"2021\"     \n\n\nSince we still have a non-numeric character, we cannot make the year column numeric yet. To fix this, we can transform the data so that we have a start year, and if applicable, an end year.\n\nnetflix &lt;- netflix %&gt;%\n  mutate(start_year = str_extract(YEAR_fixed,\"[0-9]{4}\"), # this gives us the first 4 numbers in the string\n         end_year = str_extract(YEAR_fixed, \"\\\\–[0-9]*\"))\n\nhead(netflix$start_year)\n\n[1] \"2021\" \"2021\" \"2010\" \"2013\" \"2020\" \"2021\"\n\nhead(netflix$end_year)\n\n[1] NA      \"–\"     \"–2022\" \"–\"     \"–\"     NA     \n\n\nNow, we have the start year in a character format that we can use to convert to numeric, but we still need to handle end year, which has NAs if it is a movie, just a dash if the series is ongoing/hasn’t ended, and dash with a year if the series ended. We will deal with this using dplyr’s case_when function, which is essentially an if-else function.\n\nnetflix &lt;- netflix %&gt;% \n  mutate(end_year = case_when(end_year == \"–\" ~ \"Present\",\n                              str_detect(end_year, \"[0-9]\") ~ str_extract(end_year, \"[0-9]+\"),\n                              is.na(end_year) ~ NA))\n\nhead(netflix$end_year)\n\n[1] NA        \"Present\" \"2022\"    \"Present\" \"Present\" NA       \n\n\nNow, we can make the years numeric. Note that because we recoded end_year to differentiate between series that are still ongoing, we will create an additional column that is the end year, but numeric, so that we maintain this extra information elsewhere.\n\n# note that this will warn us that it introduced NAs by coercion, in this case this is not an issue because it's simply making \"Present\" into NA\nnetflix &lt;- netflix %&gt;% \n  mutate(start_year = as.integer(start_year),\n         end_year_num = as.integer(end_year)) %&gt;%\n# we will also drop columns we no longer need\n  select(-YEAR, -YEAR_fixed)\n\nWarning: There was 1 warning in `mutate()`.\nℹ In argument: `end_year_num = as.integer(end_year)`.\nCaused by warning:\n! NAs introduced by coercion\n\n\n\n\nGetting the main genre\nWe have a column called GENRE, which classifies each movie/series under 1 or more genres. Because genres can easily overlap, we can deal with this by making a column that is only the first genre, which we will assume is the primary genre.\n\nfirst_genre = \"[^\\\\s^,]+\" # this matches 1 or more characters that are not a new line (\\n) or a comma\n\nhead(str_extract(netflix$GENRE, first_genre))\n\n[1] \"Action\"    \"Animation\" \"Drama\"     \"Animation\" \"Action\"    \"Drama\"    \n\n# now that we know it worked properly, we can now make a column for it\nnetflix &lt;- netflix %&gt;% \n  mutate(main_genre = str_extract(GENRE, first_genre)) %&gt;%\n  select(-GENRE)\n\n\n\nRemoving symbols from numbers\nWe have two other columns that are numbers but are character due to symbols in the string, VOTES and Gross.\n\n# let's fix VOTES by removing all non-numeric characters\nnetflix &lt;- netflix %&gt;%\n  mutate(VOTES = as.integer(str_remove_all(VOTES, \"[^0-9]\")))\n\n# now, let's fix Gross by removing all non-numeric characters besides \".\"\nnetflix &lt;- netflix %&gt;%\n  mutate(Gross = as.numeric(str_remove_all(Gross, \"[^0-9^.]\")))"
+  },
+  {
+    "objectID": "WranglingExample.html#expanding-columns",
+    "href": "WranglingExample.html#expanding-columns",
+    "title": "Example of Data Wrangling in R",
+    "section": "Expanding columns",
+    "text": "Expanding columns\nWe have a column, STARS that has a list of the director and the stars. We want to make a directors column and a separate cast column, and then from there, create a new dataset where each row is an actor in a movie.\n\n# here, we use a positive lookahead that \"iterates\" through the string if the text before the current position is \"Director: \" and if so, returns the text after it (the name of the director)\nnetflix &lt;- netflix %&gt;% \n  mutate(director = str_extract(STARS, \"(?&lt;=Director:\\\\s).*\"),\n         cast = str_extract(STARS, \"(?&lt;=Stars:\\\\s)[\\\\S\\\\s]*\"))\n\nWhile the director column now only has 1 name, the cast column has more than 1 name. Let’s split this into a character vector:\n\nnetflix &lt;- netflix %&gt;%\n  mutate(cast = str_split(\n    # first we remove all new lines\n    str_remove_all(cast, \"\\\\n\"), \n    # then we split the string by any # of whitespaces followed by a comma followed by any # of whitespaces again\n    \"\\\\s*,\\\\s*\")) %&gt;%\n  select(-STARS)\n\nhead(netflix$cast, 2)\n\n[[1]]\n[1] \"Peri Baumeister\"  \"Carl Anton Koch\"  \"Alexander Scheer\" \"Kais Setti\"      \n\n[[2]]\n[1] \"Chris Wood\"            \"Sarah Michelle Gellar\" \"Lena Headey\"          \n[4] \"Mark Hamill\"          \n\n\nNow, we can create a separate dataframe by actor name using the unnest function:\n\nlibrary(tidyr)\nnetflix_actors &lt;- netflix %&gt;%\n  unnest(cast) %&gt;%\n  rename(\"actor\" = \"cast\") %&gt;%\n  filter(!is.na(actor))\n\nhead(netflix_actors, 4)\n\n\n  \n\n\n\nNow, we can examine things like what actors are most commonly in Netflix movies/shows (see Aggregation)"
+  },
+  {
+    "objectID": "WranglingExample.html#creating-conditional-variables",
+    "href": "WranglingExample.html#creating-conditional-variables",
+    "title": "Example of Data Wrangling in R",
+    "section": "Creating Conditional Variables",
+    "text": "Creating Conditional Variables\nSince our dataset includes TV shows and movies, it would be nice to have a varaible indicating which it is. Since movies have an NA in the end_year column, we can use this to recode a new variable, type.\n\n# we'll use if-else here since it's just 1 condition, but could also use case_when\nnetflix &lt;- netflix %&gt;% \n  mutate(type = ifelse(is.na(end_year), \"Movie\", \"Series\"))"
+  },
+  {
+    "objectID": "WranglingExample.html#factors",
+    "href": "WranglingExample.html#factors",
+    "title": "Example of Data Wrangling in R",
+    "section": "Factors",
+    "text": "Factors\nFactors are ordinal data, meaning it is data with an order to it. Examples include education level, rank, and other data that isn’t necessarily numeric, but has levels of importance or position. For example, if we wanted to categorize movies and series ratings on a 5-level system, we could do that using factor and rescale:\n\nlibrary(scales)\n# here are the levels we will give ratings with 0-5 stars\nratings = c(\"Unwatchable\", \"Bad\", \"Mediocre\", \"Good\", \"Great\", \"Favorite\")\n\n# first we need to convert the 0-10 rating into a 0-5 integer scale \n# we use rescale() to convert the 0-10 to 0-5\n# then use round() so it rounds to the nearest integer\n\nnetflix &lt;- netflix %&gt;% \n  mutate(rescaled_rating = round(rescale(RATING, to = c(0, 5))))\n\nsummary(netflix$rescaled_rating)\n\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n  0.000   3.000   3.000   3.307   4.000   5.000 \n\n# now, we can make it into a factor\nnetflix &lt;- netflix %&gt;%\n  mutate(rating_factor = factor(rescaled_rating, \n# since it's already numeric, we don't need to specify the order of the levels, but we can give those numeric values a text label associated with it\n                                labels = ratings))\n\nplot(netflix$rating_factor) # most movies are \"good\" or \"great\""
+  },
+  {
+    "objectID": "WranglingExample.html#agg",
+    "href": "WranglingExample.html#agg",
+    "title": "Example of Data Wrangling in R",
+    "section": "Aggregation",
+    "text": "Aggregation\nNow that we have a cleaned dataset, we can begin to use aggregation to summarize and examine our dataset. For example, if we wanted to see what actors have been in the most Netflix movies:\n\nmost_common_stars &lt;- netflix_actors %&gt;% \n  filter(is.na(end_year)) %&gt;%\n  group_by(actor) %&gt;% \n  summarize(num_movies = n()) %&gt;% \n  arrange(desc(num_movies)) %&gt;%\n  head(10)\n\nlibrary(ggplot2)\n\nWarning: package 'ggplot2' was built under R version 4.4.3\n\nggplot(most_common_stars, aes(reorder(actor, num_movies), num_movies)) +\n  geom_col(fill = \"#E50914\") + \n  coord_flip() +\n  labs(x = \"Actor\", y = \"Number of Netflix Movies\")\n\n\n\n\n\n\n\n\nAnother example we can do is average rating by genre, and we find that horror productions are not as highly rated as animation, crime, and documentary productions:\n\nby_genre &lt;- netflix %&gt;%\n  group_by(main_genre) %&gt;%\n  filter(n() &gt;= 50) %&gt;% # only genres with more than 50 productions will be included\n  summarize(avg_rating = mean(RATING))\n\nggplot(by_genre, aes(reorder(main_genre, avg_rating), avg_rating)) + \n  geom_point(color = \"#E50914\") + \n  coord_flip() +\n  labs(x = \"Genre\", y = \"Average Rating\")"
+  },
+  {
+    "objectID": "WranglingExample.html#merging-datasets",
+    "href": "WranglingExample.html#merging-datasets",
+    "title": "Example of Data Wrangling in R",
+    "section": "Merging Datasets",
+    "text": "Merging Datasets\nOftentimes, we will need to combine datasets based on particular columns. For example, we will use a dataset about actor popularity on IMDB.\n\nactors &lt;- read.csv(\"https://raw.githubusercontent.com/biancaschutz/rguides/refs/heads/main/celebrity_data.csv\")\n\nhead(actors)\n\n\n  \n\n\n\nTo combine these datasets, we could use merge, but the join functions give you more control (I think they’re better).\nIn this case, our “database” of actors in the netflix_actors dataframe we created is much more extensive than the actors dataframe we just imported. Because of that, if we were to left_join netflix_actors with actors, we end up with many NAs:\n\ntest_actors &lt;- netflix_actors %&gt;% left_join(actors, by = c(\"actor\" = \"Name\"))\n\nsum(is.na(test_actors))\n\n[1] 291188\n\n\nIf we right join instead:\n\ntest_actors &lt;- netflix_actors %&gt;% right_join(actors, by = c(\"actor\" = \"Name\"))\n\nsum(is.na(test_actors))\n\n[1] 988\n\nsum(is.na(test_actors$MOVIES))\n\n[1] 40\n\n\nWe only have 988 NAs in this case, with only a few in the MOVIES column, which tells us that there are some actors in the actors dataframe that are not in our Netflix dataset. If you wanted to be certain this isn’t because of one dataset including accents while the other doesn’t, including middle names, etc., you can use string manipulation to adjust this. For the purposes of this notebook, we will just use an inner join, which will only find the names that BOTH datasets include:\n\nactors_joined &lt;- netflix_actors %&gt;% inner_join(actors, by = c(\"actor\" = \"Name\"))\n\nhead(actors_joined)\n\n\n  \n\n\n\nWe can see if actor rank has a relationship with gross income, for example:\n\nggplot(actors_joined, aes(Rank, Gross)) +\n  geom_point() +\n  geom_abline()\n\nWarning: Removed 162 rows containing missing values or values outside the scale range\n(`geom_point()`).\n\n\n\n\n\n\n\n\n\nUsing this, we can also determine if Netflix movies and series with more popular actors tend to have higher ratings.\n\npopular_productions &lt;- data.frame(\"MOVIES\" = actors_joined %&gt;% distinct(MOVIES), \"has_popular_actor\" = TRUE)\n\nNow, we can use another join with our main dataset:\n\nactor_popularity &lt;- netflix %&gt;%\n  left_join(popular_productions, by = \"MOVIES\") %&gt;%\n  mutate(has_popular_actor = ifelse(is.na(has_popular_actor), FALSE, has_popular_actor))\n\n\nlibrary(ggrepel)\navg_ratings_actor &lt;- actor_popularity %&gt;%\n  group_by(has_popular_actor) %&gt;%\n  summarize(avg_rating = mean(RATING))\n\nggplot(avg_ratings_actor, aes(has_popular_actor, avg_rating)) +\n  geom_point() + \n  geom_text_repel(aes(label = round(avg_rating, 2)))\n\n\n\n\n\n\n\n\nThere is not a large difference between having a popular actor in the movie and the average rating."
+  },
+  {
+    "objectID": "ggplot2.html",
+    "href": "ggplot2.html",
+    "title": "ggplot2",
+    "section": "",
+    "text": "The ggplot() function is the first step to building a data visualization, and has two main parameters:\n\ndata: the first parameter is your dataframe\n\n\nlibrary(ggplot2)\n\nWarning: package 'ggplot2' was built under R version 4.4.3\n\nlibrary(dplyr)\n\n\nAttaching package: 'dplyr'\n\n\nThe following objects are masked from 'package:stats':\n\n    filter, lag\n\n\nThe following objects are masked from 'package:base':\n\n    intersect, setdiff, setequal, union\n\nlibrary(tidyr)\nlibrary(stringr)\n\nggplot(data = starwars)\n\n\n\n\n\n\n\n\n\nmapping: the aesthetic attributes of the plot, using aes()\n\n\nggplot(data = starwars, aes(x = mass, y = height))"
+  },
+  {
+    "objectID": "ggplot2.html#one-variable",
+    "href": "ggplot2.html#one-variable",
+    "title": "ggplot2",
+    "section": "One Variable",
+    "text": "One Variable\n\nContinuous\nAn area plot is useful for showing quantities over time\n\nwww &lt;- data.frame(\"time\" = 1:100, \"usage\" = as.vector(WWWusage))\n\nggplot(www, aes(x = time, y = usage)) +\n  geom_area()\n\n\n\n\n\n\n\n\nA histogram shows the distribution of a continuous variable:\n\nggplot(www, aes(usage)) + \n  geom_histogram(binwidth = 20)\n\n\n\n\n\n\n\n\nDensity plots draw the kernel density estimate, a smoothed version of the histogram.\n\nggplot(www, aes(usage)) + \n  geom_density()\n\n\n\n\n\n\n\n\nDot plots are similar to histograms:\n\nggplot(www, aes(usage)) +\n  geom_dotplot()\n\nBin width defaults to 1/30 of the range of the data. Pick better value with\n`binwidth`.\n\n\n\n\n\n\n\n\n\nA QQ-plot, comparing the quartiles of the theoretical and sample distributions, shows if a sample follows a specific distribution:\n\nggplot(mtcars, aes(sample = mpg)) +\n  geom_qq() + # or use stat_qq\n  geom_qq_line()\n\n\n\n\n\n\n\n\n\n\nDiscrete\nUse a bar chart to display a single discrete variable. There are two ways to do this using ggplot:\n\nUse geom_bar() to have ggplot calculate counts for you\n\n\n# here, we make cyl into a factor so that the axis does not have continuous labels (ex. no 5 showing bc there are no cars w/ value 5)\nggplot(mtcars, aes(x = as.factor(cyl))) + \n  geom_bar()\n\n\n\n\n\n\n\n\n\nUse dplyr and geom_col() to summarize the data yourself\n\n\ncyl_counts &lt;- mtcars %&gt;%\n  count(cyl = as.factor(cyl))\n\nggplot(cyl_counts, aes(x = cyl, y = n)) + \n  geom_col()\n\n\n\n\n\n\n\n\nWhen making grouped bar charts, you can set the position to make stacked or side-by-side bars:\n\nggplot(mtcars, aes(x = as.factor(cyl), group = am, fill = as.factor(am))) + \n  geom_bar(position = \"dodge\")\n\n\n\n\n\n\n\nggplot(mtcars, aes(x = as.factor(cyl), group = am, fill = as.factor(am))) + \n  geom_bar(position = \"fill\")\n\n\n\n\n\n\n\nggplot(mtcars, aes(x = as.factor(cyl), group = am, fill = as.factor(am))) + \n  geom_bar(position = \"stack\") # default"
+  },
+  {
+    "objectID": "ggplot2.html#two-variables",
+    "href": "ggplot2.html#two-variables",
+    "title": "ggplot2",
+    "section": "Two Variables",
+    "text": "Two Variables\n\nBoth Continuous\nScatterplots are the primary visualization type when you have continuous x and y variables.\n\nggplot(mtcars, aes(x = wt, y = mpg)) + \n  geom_point()\n\n\n\n\n\n\n\n\nYou can also view these as text or labels:\n\n# these are ugly plots but they can be made prettier\nggplot(mtcars, aes(x = wt, y = mpg, label = rownames(mtcars))) + \n  geom_text()\n\n\n\n\n\n\n\nggplot(mtcars, aes(x = wt, y = mpg, label = rownames(mtcars))) + \n  geom_label()\n\n\n\n\n\n\n\n\nYou can also create lines:\n\n# either \"connecting the dots\"\nggplot(www, aes(x = time, y = usage)) + \n  geom_line()\n\n\n\n\n\n\n\n# or as a function \nggplot(www, aes(x = time, y = usage)) + \n  geom_smooth(method = \"lm\")\n\n`geom_smooth()` using formula = 'y ~ x'\n\n\n\n\n\n\n\n\nggplot(www, aes(x = time, y = usage)) + \n  geom_smooth()\n\n`geom_smooth()` using method = 'loess' and formula = 'y ~ x'\n\n\n\n\n\n\n\n\n\nA rug plot is displayed as marks along an axis. It is used to visualize the distribution of the data:\n\nggplot(mtcars, aes(x = wt, y = mpg, label = rownames(mtcars))) + \n  geom_point() +\n  geom_rug()\n\n\n\n\n\n\n\n\n\n\nOne Discrete, One Continuous\nBar plots are a good option, especially for summaries of data by group:\n\nmtcars_avg_mpg &lt;- mtcars %&gt;% \n  group_by(cyl = as.factor(cyl)) %&gt;%\n  summarize(avg_mpg = mean(mpg))\n\nggplot(mtcars_avg_mpg, aes(x = cyl, y = avg_mpg)) + \n  geom_col()\n\n\n\n\n\n\n\n\nBoxplots, violin plots, and dotplots are useful for showing distributions of data:\n\nggplot(mtcars, aes(x = as.factor(cyl), y = mpg)) + \n  geom_boxplot()\n\n\n\n\n\n\n\n\n\n\nBoth Discrete\n\nggplot(mtcars, aes(x = as.factor(cyl), y = as.factor(am))) + \n  geom_jitter()\n\n\n\n\n\n\n\nggplot(mtcars, aes(x = as.factor(cyl), y = as.factor(am))) + \n  geom_count()"
+  },
+  {
+    "objectID": "ggplot2.html#maps",
+    "href": "ggplot2.html#maps",
+    "title": "ggplot2",
+    "section": "Maps",
+    "text": "Maps\n\nlibrary(sf)\n\nWarning: package 'sf' was built under R version 4.4.3\n\n\nLinking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE\n\ngeo &lt;- read_sf(\"https://raw.githubusercontent.com/biancaschutz/WomensWorldCup2019/refs/heads/main/App/data/viewership.geo.json\")\n\nggplot() +\n      geom_sf(data = geo)"
+  },
+  {
+    "objectID": "ggplot2.html#fill-and-color",
+    "href": "ggplot2.html#fill-and-color",
+    "title": "ggplot2",
+    "section": "Fill and color",
+    "text": "Fill and color\nFill changes the inside color of the geometry, and is primarily used with bar plots. Color changes the border of the geometry, and is used for scatterplots.\n\n# setting fill does this: \nggplot(mtcars_avg_mpg, aes(x = as.factor(cyl), \n                           y = avg_mpg,\n                           fill = cyl)) +\n  geom_col()\n\n\n\n\n\n\n\n# whereas setting color does this: \nggplot(mtcars_avg_mpg, aes(x = as.factor(cyl), \n                           y = avg_mpg,\n                           color = cyl)) +\n  geom_col()\n\n\n\n\n\n\n\n\n\n# scatterplot with fill:\nggplot(mtcars, aes(x = wt, y = mpg, fill = as.factor(cyl))) + \n  geom_point()\n\n\n\n\n\n\n\n# scatterplot with color:\nggplot(mtcars, aes(x = wt, y = mpg, color = as.factor(cyl))) + \n  geom_point()"
+  },
+  {
+    "objectID": "ggplot2.html#size",
+    "href": "ggplot2.html#size",
+    "title": "ggplot2",
+    "section": "Size",
+    "text": "Size\nUse size to change the size of geometries, such as scatterplot points.\n\nggplot(mtcars, aes(x = wt, y = mpg, size = qsec)) + \n  geom_point()"
+  },
+  {
+    "objectID": "ggplot2.html#opacity",
+    "href": "ggplot2.html#opacity",
+    "title": "ggplot2",
+    "section": "Opacity",
+    "text": "Opacity\nUse alpha to change the opacity of geometries.\n\nggplot(mtcars, aes(x = wt, y = mpg, alpha = qsec)) + \n  geom_point()"
+  },
+  {
+    "objectID": "ggplot2.html#line-type-and-width",
+    "href": "ggplot2.html#line-type-and-width",
+    "title": "ggplot2",
+    "section": "Line Type and Width",
+    "text": "Line Type and Width\nThese aren’t used as often, but can still be helpful in certain situations:\n\nexp_long &lt;- as.data.frame(USPersonalExpenditure) %&gt;% tibble::rownames_to_column(\"type\") %&gt;%\n  pivot_longer(-type, names_to = \"year\", values_to = \"expenditure\")\n\nggplot(exp_long, aes(x= year, y = expenditure, group = type, linetype = type)) + \n  geom_line()\n\n\n\n\n\n\n\n\n\nggplot(mtcars, aes(x = wt, y = mpg)) + \n  geom_point() + \n    geom_smooth(method='lm', linewidth = .5)\n\n`geom_smooth()` using formula = 'y ~ x'\n\n\n\n\n\n\n\n\nggplot(mtcars_avg_mpg, aes(x = as.factor(cyl), \n                           y = avg_mpg,\n                           color = cyl)) +\n  geom_col(linewidth = 3)"
+  },
+  {
+    "objectID": "ggplot2.html#img",
+    "href": "ggplot2.html#img",
+    "title": "ggplot2",
+    "section": "Image",
+    "text": "Image\n\nlibrary(ggimage)\nadmissions &lt;- read.csv(\"https://raw.githubusercontent.com/biancaschutz/rguides/refs/heads/main/ggimage_example/admissions.csv\") %&gt;%\n  mutate(img = str_c(\"ggimage_example\", \n                     str_sub(img, start = 2)))\n\nggplot(admissions, aes(x = Rank_2019, y = Average_SAT, image = img)) + \n  geom_image(size = .25)"
+  },
+  {
+    "objectID": "ggplot2.html#labels",
+    "href": "ggplot2.html#labels",
+    "title": "ggplot2",
+    "section": "Labels",
+    "text": "Labels\nUse the labs() function to adjust the labels on your plot. x and y allow you to change the axis labels, fill and other aesthetics change the legend label, and title, subtitle, and caption are useful for changing other labels\n\nb &lt;- ggplot(mtcars, aes(x = as.factor(cyl), \n                   group = am, \n                   fill = as.factor(am))) + \n  geom_bar(position = \"dodge\")\n\nb\n\n\n\n\n\n\n\nlbl &lt;- labs(x = \"Number of Cylinders\", \n       y = \"Number of Cars\",\n       fill = \"Transmission\",\n       title = \"Cars by Cylinder Number and Transmission Type\",\n       subtitle = \"Most cars are automatic and have 8 cylinders\",\n       caption = \"Created by Bianca\")\n\nb + lbl\n\n\n\n\n\n\n\n\nWhile this plot is an improvement, it is still not clear what the legend means. To fix this, we can also adjust the data itself to give the factor labels.\n\nb2 &lt;- ggplot(mtcars, aes(x = as.factor(cyl), \n                   group = am, \n                   fill = factor(am, levels = c(0, 1), labels = c(\"Automatic\", \"Manual\")))) + \n  geom_bar(position = \"dodge\") + \n  lbl\n\nb2"
+  },
+  {
+    "objectID": "ggplot2.html#themes",
+    "href": "ggplot2.html#themes",
+    "title": "ggplot2",
+    "section": "Themes",
+    "text": "Themes\nYou can change the theme of your plot, including themes from base R and from ggthemes.\n\nb2 + theme_bw()\n\n\n\n\n\n\n\nb2 + theme_light()\n\n\n\n\n\n\n\nlibrary(ggthemes) # there are also other themes from this package\n\nWarning: package 'ggthemes' was built under R version 4.4.3\n\nb2 + ggthemes::theme_tufte()"
+  },
+  {
+    "objectID": "ggplot2.html#pal",
+    "href": "ggplot2.html#pal",
+    "title": "ggplot2",
+    "section": "Color Palettes",
+    "text": "Color Palettes\n\nCustom Colors\nR has hundreds of named colors which can be accessed with colors() and you can also use any hex code like #FF0000. See this cheat sheet for more information about choosing colors.\n\ns &lt;- ggplot(mtcars, aes(x = wt, y = mpg, color = factor(am, levels = c(0, 1), labels = c(\"Automatic\", \"Manual\")))) + \n  geom_point() + \n  labs(x = \"Weight\", y = \"Miles Per Gallon\", color = \"Transmission\")\n\ns + scale_color_manual(values = list('Automatic' = \"red\", \n                                     'Manual' = \"blue\"))\n\n\n\n\n\n\n\nb2 + scale_fill_manual(values = list('Automatic' = \"red\", \n                                     'Manual' = \"blue\"))\n\n\n\n\n\n\n\n\n\n\nBase R Palettes\nOptions include rainbow(n), heat.colors(n), terrain.colors(n), topo.colors(n), and cm.colors(n)\n\nb2 + scale_fill_manual(values = rainbow(n = 2))\n\n\n\n\n\n\n\n\n\n\nRColorBrewer\nSee the website for a list of all palettes. There are diverging palettes (good for ordinal color scales that range from negative to positive), sequential (for ordinal color scales), and qualitative (for data that is unordered).\n\nlibrary(nycflights13)\nggplot(mtcars, aes(x = wt, y = mpg, color = as.factor(cyl))) + \n  geom_point() + \n  scale_color_brewer(palette = \"RdPu\") + # sequential\n  labs(x = \"Weight\", y = \"Miles Per Gallon\", color = \"Cylinders\")\n\n\n\n\n\n\n\nflights_monthly &lt;- flights %&gt;% \n  drop_na() %&gt;%\n  filter(year == 2013) %&gt;%\n  mutate(delay_level = case_when(dep_delay &gt; 10 ~ \"Delay\",\n                                  between(dep_delay, -10, 10) ~ \"On Time\", \n                                  dep_delay &lt; -10 ~ \"Early\", \n                                  .default = NA)) %&gt;%\n  group_by(month, delay_level) %&gt;%\n  count()\n  \nggplot(flights_monthly, aes(x = as.factor(month), y = n, fill = factor(delay_level, levels = c(\"Delay\", \"On Time\", \"Early\")))) + \n  geom_col(position = \"fill\") + \n  scale_fill_brewer(palette = \"RdYlGn\") + \n  labs(fill = \"Type\", y = \"% of flights\", x = \"month\")\n\n\n\n\n\n\n\nb2 + scale_fill_brewer(palette = \"Dark2\") # qualitative\n\n\n\n\n\n\n\n\n\n\nViridis\nViridis has various palettes, that are especially useful for maps. See the documentation here.\n\nggplot(mtcars, aes(wt, mpg, color = factor(cyl))) + \n  geom_point() +\n  viridis::scale_color_viridis(discrete=TRUE)\n\n\n\n\n\n\n\n\n\n\nOther\nggthemes has some nice palettes:\n\nlibrary(scales)\nshow_col(tableau_color_pal('Tableau 20')(6))\n\n\n\n\n\n\n\nggplot(as.data.frame(Titanic), aes(x = Survived, y = Freq, fill = Class)) +\n  geom_col(position = \"dodge\") +\n  ggthemes::scale_fill_wsj()\n\n\n\n\n\n\n\n\nIf you’re a Wes Anderson fan, there’s a package for you:\n\nggplot(as.data.frame(Titanic), aes(x = Survived, y = Freq, fill = Class)) +\n  geom_col(position = \"dodge\") +\n  scale_fill_manual(values = \n                      wesanderson::wes_palette(\"AsteroidCity1\"))\n\n\n\n\n\n\n\n\nYou also might find a palette from your favorite tv show:\n\nggplot(as.data.frame(Titanic), aes(x = Survived, y = Freq, fill = Class)) +\n  geom_col(position = \"dodge\") +\n  tvthemes::scale_fill_simpsons()\n\n\n\n\n\n\n\n\nIf you need a color palette from a scientific journal, R has those too:\n\nggplot(as.data.frame(Titanic), aes(x = Survived, y = Freq, fill = Class)) +\n  geom_col(position = \"dodge\") +\n  ggsci::scale_fill_npg()"
+  },
+  {
+    "objectID": "ggplot2.html#range",
+    "href": "ggplot2.html#range",
+    "title": "ggplot2",
+    "section": "X and Y Axis Range",
+    "text": "X and Y Axis Range\nChange the min and max shown on the plot using xlim() and ylim().\n\nggplot(fivethirtyeight::nfltix_usa_avg %&gt;% \n         slice_max(order_by = avg_tix_price, n = 10), \n       aes(x = team, y = avg_tix_price)) + \n  geom_point() + \n  ylim(150, 300) +\n  coord_flip()"
+  },
+  {
+    "objectID": "ggplot2.html#xaxis",
+    "href": "ggplot2.html#xaxis",
+    "title": "ggplot2",
+    "section": "Dealing with long x-axis labels",
+    "text": "Dealing with long x-axis labels\nIt is good practice not to rotate your axis labels to make them fit, as it makes it harder to read your plot. Instead, rotate your entire plot:\n\nggplot(fivethirtyeight::nfltix_usa_avg %&gt;% \n         slice_max(order_by = avg_tix_price, n = 10), \n       aes(x = team, y = avg_tix_price)) + \n  geom_point() + \n  ylim(150, 300)\n\n\n\n\n\n\n\nggplot(fivethirtyeight::nfltix_usa_avg %&gt;% \n         slice_max(order_by = avg_tix_price, n = 10), \n       aes(x = team, y = avg_tix_price)) + \n  geom_point() + \n  ylim(150, 300) +\n  coord_flip()"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Index",
+    "section": "",
+    "text": "How do I…\n\nSummarize data by group?\n\nCount observations\nOther calculations\n\nCombine two datasets?\nMake data wide or long?\nCreate a new column based on existing columns?\nKeep or drop observations (filter) based on conditions?\nKeep or drop columns?\nReorder or sort data?\n\n\n\n\nHow do I…\n\nRemove text from a string?\nExtract text from a string?\nReplace text with other text?\nCheck if a string contains a pattern?\nCreate a pattern, or sequence of characters that specifies a match pattern in text, such as extracting all numbers?"
+  },
+  {
+    "objectID": "index.html#data-manipulation",
+    "href": "index.html#data-manipulation",
+    "title": "Index",
+    "section": "",
+    "text": "How do I…\n\nSummarize data by group?\n\nCount observations\nOther calculations\n\nCombine two datasets?\nMake data wide or long?\nCreate a new column based on existing columns?\nKeep or drop observations (filter) based on conditions?\nKeep or drop columns?\nReorder or sort data?"
+  },
+  {
+    "objectID": "index.html#string-manipulation",
+    "href": "index.html#string-manipulation",
+    "title": "Index",
+    "section": "",
+    "text": "How do I…\n\nRemove text from a string?\nExtract text from a string?\nReplace text with other text?\nCheck if a string contains a pattern?\nCreate a pattern, or sequence of characters that specifies a match pattern in text, such as extracting all numbers?"
+  },
+  {
+    "objectID": "index.html#ggplot2",
+    "href": "index.html#ggplot2",
+    "title": "Index",
+    "section": "ggplot2",
+    "text": "ggplot2\nHow do I…\n\nVisualize one discrete variable? (ex. bar chart)\nVisualize one continuous variable? (ex. histogram)\nVisualize two continuous variables? (ex. scatterplot)\nVisualize one discrete, and one continuous variable? (ex. bar chart)\nVisualize two discrete variables? (ex. jitters)\nMake a map?\nChange the colors, line type, and other aesthetics?\nAdd labels?\nChange the theme?\nChange the color scheme?\nDeal with overlapping x-axis labels?\nAdjust the range/scale of my axes?"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site\n\n1 + 1\n\n[1] 2"
+  }
+]

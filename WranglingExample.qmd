@@ -1,0 +1,419 @@
+---
+title: "Example of Data Wrangling in R"
+editor: visual
+toc: true
+format: 
+   html:
+     df-print: paged
+---
+
+# Exploratory Data Analysis
+
+For this document, we will be using a dataset scraped from IMDB's top Netflix movies and TV shows, obtained from [Kaggle](https://www.kaggle.com/datasets/bharatnatrayn/movies-dataset-for-feature-extracion-prediction?select=movies.csv).
+
+```{r}
+# Set up
+cat("\014") # clear the console
+rm(list=ls()) # clear the environment
+set.seed(1738) # set seed for any random operations
+```
+
+```{r}
+# Load in our dataset
+netflix <- read.csv("https://raw.githubusercontent.com/biancaschutz/rguides/refs/heads/main/movies.csv")
+```
+
+## Structure
+
+First, we want to understand what our data contains (column names, dimensions, data types, etc.).
+
+```{r}
+# str() shows us the datatype and first observations of all columns
+str(netflix)
+
+# Another good function to use is head(), which will show you the X first rows in a dataset
+head(netflix, 5)
+
+# dim will give you the number of rows, and then columns
+dim(netflix) 
+
+# nrow gives you just the number of rows
+nrow(netflix) 
+
+# ncol gives you just the number of columns
+ncol(netflix)
+```
+
+```{r}
+```
+
+Here, we can see that we have several numeric/date columns that are character data, not numeric. That is one aspect we will need to fix when cleaning the dataset. We also have messy columns like the `STARS` column, which features a list of the director and actors.
+
+## Missing Data
+
+Another aspect we want to check is how much data is missing.
+
+```{r}
+sum(is.na(netflix)) # this will count the number of NAs in our dataset, overall
+
+colSums(is.na(netflix)) # this will count the number of NAs per column
+```
+
+Based on this, we can see that `RATING` and `RunTime` are missing data. However, note that our character columns have no missing data. To verify this, we can check if there are empty text cells:
+
+```{r}
+colSums(netflix == "")
+```
+
+We can see that most rows are missing from the `Gross` column, and there are also many missing from `Year` and `VOTES`.
+
+```{r}
+hist(colSums(netflix == "" | is.na(netflix)), main = "Missing Observations in Movies Dataset", xlab = "")
+```
+
+Which rows you remove because of missing data depends on what you need from the data and what you are analyzing. There will also be situations where you can fill in missing data with the mean, median, or other values as appropriate.
+
+For example, here, we will remove any rows that are missing `YEAR` or `RATING`, but keep rows that are missing `Gross`, `Genre`, and `Runtime`.
+
+## Distributions
+
+Another important aspect of data exploration is visualizing distributions of columns. We did a bit of this with `colSums()` and looking at missing data, but we can do more, such as seeing unique values in a column or the distribution of a numeric variable.
+
+### Character Column Exploration
+
+Here, our `YEAR` column is currently a character/string column, meaning it is quite messy. Because of this, `table(netflix$YEAR)` prints over 400 different values for year. While it's commented out because it's messy, it's still important to run it and examine. We see that there are non-year values in the column, like roman numerals.
+
+```{r}
+#table(netflix$YEAR)
+```
+
+### Numeric Column Exploration
+
+```{r}
+# average
+paste0("The mean rating of Netflix movies and series is ", round(mean(netflix$RATING), 1), "/10")
+
+# median
+paste0("The mean rating of Netflix movies and series is ", round(median(netflix$RATING), 1), "/10")
+
+# variance
+paste0("The variance of Netflix movies and series ratings is ", round(var(netflix$RATING), 1), "/10")
+
+# standard deviation
+paste0("The standard deviation of Netflix movies and series ratings is ", round(sd(netflix$RATING), 1), "/10")
+
+# IQR
+paste0("The IQR of Netflix movies and series ratings is ", round(IQR(netflix$RATING, na.rm = TRUE), 1), "/10")
+
+# range
+round(range(netflix$RATING), 1)
+
+# you can also get the min and max
+round(min(netflix$RATING), 1)
+round(max(netflix$RATING), 1)
+
+# the summary function gives you many of those in 1 summary:
+summary(netflix$RATING)
+
+# you can also find where the max and min are
+paste("The movie/series with the lowest rating is", netflix$MOVIE[which.min(netflix$RATING)])
+
+paste("The movie/series with the highest rating is", netflix$MOVIE[which.max(netflix$RATING)])
+```
+
+We can also visualize the distribution of numeric columns with a histogram:
+
+```{r}
+hist(netflix$RATING)
+```
+
+What you explore in your dataset is determined by the questions you're interested in answering, how messy your data is, and other factors.
+
+Note that once you have cleaned your data, it's important to continue to explore it to verify you have sufficiently cleaned the data and examine patterns that you couldn't before.
+
+# Data Cleaning
+
+## Subsetting your data
+
+### Missing data
+
+First, let's reduce the amount of data we're dealing with based on the missing data we said we'd remove, `YEAR` and `RATING`.
+
+```{r}
+library(dplyr)
+netflix <- netflix %>% 
+  filter(!is.na(YEAR), !is.na(RATING))
+
+dim(netflix) # we lost less than 2000 observations
+```
+
+## String Manipulation
+
+### Converting the `YEAR` column to numeric
+
+For the `YEAR` column, we want to remove all non-numeric or "-" characters.
+
+```{r}
+library(stringr)
+year_only <- "[^0-9\\–]"
+
+# first, let's make sure this string pattern works the way we want it to
+
+head(str_extract_all(netflix$YEAR, year_only))
+```
+
+```{r}
+# now, let's remove the extra characters
+netflix <- netflix %>% mutate(YEAR_fixed = str_remove_all(YEAR, year_only))
+
+# this shows us that the years now only feature numbers and a hyphen for TV shows
+head(netflix$YEAR_fixed)
+```
+
+Since we still have a non-numeric character, we cannot make the year column numeric yet. To fix this, we can transform the data so that we have a start year, and if applicable, an end year.
+
+```{r}
+
+netflix <- netflix %>%
+  mutate(start_year = str_extract(YEAR_fixed,"[0-9]{4}"), # this gives us the first 4 numbers in the string
+         end_year = str_extract(YEAR_fixed, "\\–[0-9]*"))
+
+head(netflix$start_year)
+head(netflix$end_year)
+```
+
+Now, we have the start year in a character format that we can use to convert to numeric, but we still need to handle end year, which has NAs if it is a movie, just a dash if the series is ongoing/hasn't ended, and dash with a year if the series ended. We will deal with this using dplyr's `case_when` function, which is essentially an if-else function.
+
+```{r}
+netflix <- netflix %>% 
+  mutate(end_year = case_when(end_year == "–" ~ "Present",
+                              str_detect(end_year, "[0-9]") ~ str_extract(end_year, "[0-9]+"),
+                              is.na(end_year) ~ NA))
+
+head(netflix$end_year)
+```
+
+Now, we can make the years numeric. Note that because we recoded `end_year` to differentiate between series that are still ongoing, we will create an additional column that is the end year, but numeric, so that we maintain this extra information elsewhere.
+
+```{r}
+# note that this will warn us that it introduced NAs by coercion, in this case this is not an issue because it's simply making "Present" into NA
+netflix <- netflix %>% 
+  mutate(start_year = as.integer(start_year),
+         end_year_num = as.integer(end_year)) %>%
+# we will also drop columns we no longer need
+  select(-YEAR, -YEAR_fixed)
+```
+
+### Getting the main genre
+
+We have a column called `GENRE`, which classifies each movie/series under 1 or more genres. Because genres can easily overlap, we can deal with this by making a column that is only the first genre, which we will assume is the primary genre.
+
+```{r}
+first_genre = "[^\\s^,]+" # this matches 1 or more characters that are not a new line (\n) or a comma
+
+head(str_extract(netflix$GENRE, first_genre))
+
+# now that we know it worked properly, we can now make a column for it
+netflix <- netflix %>% 
+  mutate(main_genre = str_extract(GENRE, first_genre)) %>%
+  select(-GENRE)
+```
+
+### Removing symbols from numbers
+
+We have two other columns that are numbers but are character due to symbols in the string, `VOTES` and `Gross`.
+
+```{r}
+# let's fix VOTES by removing all non-numeric characters
+netflix <- netflix %>%
+  mutate(VOTES = as.integer(str_remove_all(VOTES, "[^0-9]")))
+
+# now, let's fix Gross by removing all non-numeric characters besides "."
+netflix <- netflix %>%
+  mutate(Gross = as.numeric(str_remove_all(Gross, "[^0-9^.]")))
+```
+
+## Expanding columns
+
+We have a column, `STARS` that has a list of the director and the stars. We want to make a directors column and a separate cast column, and then from there, create a new dataset where each row is an actor in a movie.
+
+```{r}
+# here, we use a positive lookahead that "iterates" through the string if the text before the current position is "Director: " and if so, returns the text after it (the name of the director)
+netflix <- netflix %>% 
+  mutate(director = str_extract(STARS, "(?<=Director:\\s).*"),
+         cast = str_extract(STARS, "(?<=Stars:\\s)[\\S\\s]*"))
+```
+
+While the `director` column now only has 1 name, the `cast` column has more than 1 name. Let's split this into a character vector:
+
+```{r}
+netflix <- netflix %>%
+  mutate(cast = str_split(
+    # first we remove all new lines
+    str_remove_all(cast, "\\n"), 
+    # then we split the string by any # of whitespaces followed by a comma followed by any # of whitespaces again
+    "\\s*,\\s*")) %>%
+  select(-STARS)
+
+head(netflix$cast, 2)
+```
+
+Now, we can create a separate dataframe by actor name using the `unnest` function:
+
+```{r}
+library(tidyr)
+netflix_actors <- netflix %>%
+  unnest(cast) %>%
+  rename("actor" = "cast") %>%
+  filter(!is.na(actor))
+
+head(netflix_actors, 4)
+```
+
+Now, we can examine things like what actors are most commonly in Netflix movies/shows (see [Aggregation](#agg))
+
+# Data Transformation
+
+## Creating Conditional Variables
+
+Since our dataset includes TV shows and movies, it would be nice to have a varaible indicating which it is. Since movies have an NA in the end_year column, we can use this to recode a new variable, `type`.
+
+```{r}
+# we'll use if-else here since it's just 1 condition, but could also use case_when
+netflix <- netflix %>% 
+  mutate(type = ifelse(is.na(end_year), "Movie", "Series"))
+```
+
+## Factors
+
+Factors are ordinal data, meaning it is data with an order to it. Examples include education level, rank, and other data that isn't necessarily numeric, but has levels of importance or position. For example, if we wanted to categorize movies and series ratings on a 5-level system, we could do that using `factor` and `rescale`:
+
+```{r}
+library(scales)
+# here are the levels we will give ratings with 0-5 stars
+ratings = c("Unwatchable", "Bad", "Mediocre", "Good", "Great", "Favorite")
+
+# first we need to convert the 0-10 rating into a 0-5 integer scale 
+# we use rescale() to convert the 0-10 to 0-5
+# then use round() so it rounds to the nearest integer
+
+netflix <- netflix %>% 
+  mutate(rescaled_rating = round(rescale(RATING, to = c(0, 5))))
+
+summary(netflix$rescaled_rating)
+
+# now, we can make it into a factor
+netflix <- netflix %>%
+  mutate(rating_factor = factor(rescaled_rating, 
+# since it's already numeric, we don't need to specify the order of the levels, but we can give those numeric values a text label associated with it
+                                labels = ratings))
+
+plot(netflix$rating_factor) # most movies are "good" or "great"
+```
+
+## Aggregation {#agg}
+
+Now that we have a cleaned dataset, we can begin to use aggregation to summarize and examine our dataset. For example, if we wanted to see what actors have been in the most Netflix movies:
+
+```{r}
+most_common_stars <- netflix_actors %>% 
+  filter(is.na(end_year)) %>%
+  group_by(actor) %>% 
+  summarize(num_movies = n()) %>% 
+  arrange(desc(num_movies)) %>%
+  head(10)
+
+library(ggplot2)
+
+ggplot(most_common_stars, aes(reorder(actor, num_movies), num_movies)) +
+  geom_col(fill = "#E50914") + 
+  coord_flip() +
+  labs(x = "Actor", y = "Number of Netflix Movies")
+```
+
+Another example we can do is average rating by genre, and we find that horror productions are not as highly rated as animation, crime, and documentary productions:
+
+```{r}
+by_genre <- netflix %>%
+  group_by(main_genre) %>%
+  filter(n() >= 50) %>% # only genres with more than 50 productions will be included
+  summarize(avg_rating = mean(RATING))
+
+ggplot(by_genre, aes(reorder(main_genre, avg_rating), avg_rating)) + 
+  geom_point(color = "#E50914") + 
+  coord_flip() +
+  labs(x = "Genre", y = "Average Rating")
+```
+
+## Merging Datasets
+
+Oftentimes, we will need to combine datasets based on particular columns. For example, we will use a dataset about actor popularity on IMDB.
+
+```{r}
+actors <- read.csv("https://raw.githubusercontent.com/biancaschutz/rguides/refs/heads/main/celebrity_data.csv")
+
+head(actors)
+```
+
+To combine these datasets, we could use `merge`, but the `join` functions give you more control (I think they're better).
+
+In this case, our "database" of actors in the `netflix_actors` dataframe we created is much more extensive than the `actors` dataframe we just imported. Because of that, if we were to left_join netflix_actors with actors, we end up with many NAs:
+
+```{r}
+test_actors <- netflix_actors %>% left_join(actors, by = c("actor" = "Name"))
+
+sum(is.na(test_actors))
+```
+
+If we right join instead:
+
+```{r}
+test_actors <- netflix_actors %>% right_join(actors, by = c("actor" = "Name"))
+
+sum(is.na(test_actors))
+
+sum(is.na(test_actors$MOVIES))
+```
+
+We only have 988 NAs in this case, with only a few in the `MOVIES` column, which tells us that there are some actors in the `actors` dataframe that are not in our Netflix dataset. If you wanted to be certain this isn't because of one dataset including accents while the other doesn't, including middle names, etc., you can use string manipulation to adjust this. For the purposes of this notebook, we will just use an inner join, which will only find the names that BOTH datasets include:
+
+```{r}
+actors_joined <- netflix_actors %>% inner_join(actors, by = c("actor" = "Name"))
+
+head(actors_joined)
+```
+
+We can see if actor rank has a relationship with gross income, for example:
+
+```{r}
+ggplot(actors_joined, aes(Rank, Gross)) +
+  geom_point() +
+  geom_abline()
+```
+
+Using this, we can also determine if Netflix movies and series with more popular actors tend to have higher ratings.
+
+```{r}
+popular_productions <- data.frame("MOVIES" = actors_joined %>% distinct(MOVIES), "has_popular_actor" = TRUE)
+```
+
+Now, we can use another join with our main dataset:
+
+```{r}
+actor_popularity <- netflix %>%
+  left_join(popular_productions, by = "MOVIES") %>%
+  mutate(has_popular_actor = ifelse(is.na(has_popular_actor), FALSE, has_popular_actor))
+```
+
+```{r}
+library(ggrepel)
+avg_ratings_actor <- actor_popularity %>%
+  group_by(has_popular_actor) %>%
+  summarize(avg_rating = mean(RATING))
+
+ggplot(avg_ratings_actor, aes(has_popular_actor, avg_rating)) +
+  geom_point() + 
+  geom_text_repel(aes(label = round(avg_rating, 2)))
+```
+
+There is not a large difference between having a popular actor in the movie and the average rating.

@@ -1,0 +1,19 @@
+﻿University,img,Ivy,Rank_2019,A_Rate,Average_GPA,Average_SAT,Undergrads,Type,Early_Apps,RD_Apps,Cost,Factor_Rigor,Factor_Rank,Factor_GPA,Factor_TestScores,Factor_Essay,Factor_Recommendations,Factor_Interview,Factor_Activities,Factor_Talent,Factor_PersonalQualities,Factor_FirstGen,Factor_AlumniRelation,Factor_Geography,Factor_State,Factor_ReligiousID,Factor_Race,Factor_VolunteerWork,Factor_WorkXP,Factor_LevelofInterest
+Massachusetts Institute of Technology,./MIT.png,0,3,6.7,4.17,1550,4557,Private,9557,12149,73235,3,2,3,3,3,3,3,3,3,4,2,1,2,1,1,2,2,2,1
+Harvard University,./Harvard.png,1,2,4.6,4.18,1520,6740,Private,6958,36372,75966,2,1,2,2,2,2,2,2,2,2,2,2,2,2,1,2,2,2,1
+Stanford University,./Stanford.png,0,7,4.3,3.96,1500,6996,Private,0,42497,78218,4,4,4,4,4,4,2,4,4,4,2,2,2,1,1,2,2,2,1
+Princeton University,./Princeton.png,1,1,5.8,3.91,1520,5328,Private,5335,27469,74225,4,4,4,4,4,4,2,4,4,4,2,2,2,1,1,2,2,2,1
+Yale University,./Yale.png,1,3,6.1,4.14,1520,6088,Private,6016,30828,79400,4,4,4,4,4,4,2,4,4,4,2,2,2,2,1,2,2,2,1
+Columbia University,./Columbia.png,1,3,5.3,4.12,1520,9001,Private,4461,38108,76415,,,,,,,,,,,,,,,,,,,
+University of Chicago,./University of Chicago.png,0,3,6.2,4.47,1530,6632,Private,0,37974,80352,,,,,,,,,,,,,,,,,,,
+University of Pennsylvania,./Penn.png,1,8,7.7,3.9,1510,10019,Private,7109,37852,81185,4,3,4,4,4,4,3,3,3,4,2,2,2,2,1,2,2,2,2
+Rice University,./Rice.png,0,16,8.7,4.12,1520,3978,Private,2628,24459,69932,4,4,4,4,4,4,2,4,4,4,2,2,2,2,1,2,2,2,2
+Duke University,./Duke.png,0,8,8.9,3.94,1510,6578,Private,4070,31697,77654,4,3,4,4,4,4,2,4,4,4,2,2,2,2,2,2,2,2,2
+Brown University,./Brown.png,1,14,7.1,4.08,1500,6834,Private,4230,34444,80423,4,4,4,4,4,4,2,3,4,4,2,2,2,2,1,2,2,2,1
+Dartmouth College,./Dartmouth.png,1,12,7.9,4.11,1500,4365,Private,2474,21176,80864,4,4,4,4,4,4,2,4,3,4,2,2,2,1,1,2,2,2,2
+Cornell University,./Cornell.png,1,16,10.9,4.07,1490,14976,Private,6158,42956,77352,4,3,4,4,4,4,2,4,4,4,2,2,2,2,1,2,2,2,1
+Northwestern University,./Northwestern.png,0,10,9.1,4.13,1500,8319,Private,4399,36186,78729,4,4,4,4,3,3,2,3,3,3,2,2,1,1,1,2,2,2,2
+University of California Los Angeles,./UCLA.png,0,19,12.3,4.51,1400,31535,Public,0,111322,35999,4,1,4,4,4,1,1,3,3,3,2,1,2,2,1,1,3,3,2
+University of California Berkeley,./Berkeley.png,0,22,16.8,4.45,1430,31345,Public,0,87398,41257,4,1,4,4,4,2,1,3,1,3,2,1,1,2,1,1,3,3,1
+University of Michigan,./Michigan.png,0,27,22.9,3.88,1440,31046,Public,0,64972,31131,4,1,4,3,3,3,1,2,2,3,3,2,2,2,1,1,2,2,2
+University of North Carolina Chapel Hill,./UNC.png,0,30,22.6,4.39,1390,19034,Public,0,44784,24637,4,2,2,4,4,4,1,4,4,4,3,3,1,4,1,2,3,3,1

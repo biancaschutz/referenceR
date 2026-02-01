@@ -1,0 +1,310 @@
+---
+title: "Regex"
+toc: true
+format: 
+   html:
+     df-print: paged
+---
+
+To understand the functions used from the `stringr` package, see the [stringr guide](stringr.qmd)
+
+For regex practice outside of R, I like using [regex101.com](https://regex101.com/) to test my regex patterns before I apply them to my data.
+
+# Character Classes
+
+Character classes will match any character included in the brackets. For example, `gr[ae]y` would match either grey or gray.
+
+You can match numbers using either the short-hand or the long-hand:
+
+```{r}
+library(stringr)
+example_string <- "a9de3ms"
+shorthand_num <- "\\d"
+longhand_num <- "[0-9]"
+
+str_extract(example_string, shorthand_num) # prints the first numeric character in example_string
+
+str_extract_all(example_string, longhand_num) # prints all numeric characters in the string
+```
+
+The word character, `\w`, includes the following character set: `[A-Za-z0-9_]`.
+
+```{r}
+example_string2 <- "ALL CAPS EXCEPT this"
+uppercase <- "[A-Z]"
+lowercase <- "[a-z]"
+
+str_extract_all(example_string2, uppercase) # prints all uppercase characters in the string
+str_extract_all(example_string2, lowercase) # prints all lowercase characters in the string
+```
+
+Characters such as tabs, spaces, newlines, and others can be extracted as well:
+
+```{r}
+example_string3 <- "This is a line\nThis is a second line\n\tThis line has a tab"
+
+newline <- "\\n"
+tabs <- "\\t"
+whitespaces <- "\\s"
+just_space <- " "
+
+str_extract_all(example_string3, newline)
+str_extract_all(example_string3, tabs)
+str_extract_all(example_string3, whitespaces) # the \\s shorthand finds all tabs, newlines, etc.
+str_extract_all(example_string3, just_space)
+```
+
+## Negative Character Classes
+
+You can also find matches that are not part of a character class:
+
+```{r}
+first_nonalpha <- "[^A-Za-z]"
+
+str_extract(example_string, first_nonalpha) # prints the first non-alphabetical character in example_string
+```
+
+There are negative shorthands as well:
+
+```{r}
+example_string4 <- "1. This is a password: s7dFe8"
+not_digits <- "\\D" # same as [^\\d]
+not_words <- "\\W" # same as [^\\w]
+not_whitespace <- "\\S" # same as [^\\s]
+
+str_extract(example_string4, not_digits)
+str_extract(example_string4, not_words)
+str_extract(example_string4, not_whitespace)
+```
+
+## Wildcard
+
+In regex, the `.` is a powerful shorthand that matches any character, including whitespaces.
+
+```{r}
+wildcard_example <- "sdjf"
+wildcard_example2 <- " sdjf"
+
+wildcard <- "."
+
+str_extract(wildcard_example, wildcard)
+str_extract(wildcard_example2, wildcard)
+```
+
+## Word Boundaries
+
+A `\b` is used to match word boundaries, between a word character matched by `\\w` and a non-word character matched by `\\W` (or vice versa).
+
+```{r}
+sentence <- "The quick brown fox jumped over the lazy dog."
+
+# for example, this will match a word of any length ending in d
+word_boundaries <- "\\w*d\\b"
+
+str_match_all(sentence, word_boundaries)
+```
+## Beginning and end
+Use the `^` to indicate that an expression must occur at the beginning of a string, and use the `$` to indicate it is at the end. For example, if I wanted to check how many sentences begin with "I":
+
+```{r}
+sentences <- c("I am writing to express my interest in the position at the company.",
+               "I am a recent graduate with experience in policy research interested in building a career focused on government accountability through data-driven policy.",
+               "I'm excited to learn more about the company.",
+               "Having taken classes on the subject, I am intrigued by the company's research.")
+
+sentence_begins_w_i <- "^I"
+
+str_match(sentences, sentence_begins_w_i)
+```
+Or check which strings are a paragraph (end with a newline and valid punctuation):
+```{r}
+paragraphs <- c("Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius.\n",
+                # note that the below string contains the valid pattern, but it is not at the end of the string
+                "Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat.\n Vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan.",
+                "Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum!\n")
+
+is_paragraph <- "[\\.\\?\\!]\\n$"
+
+str_match(paragraphs, is_paragraph)
+```
+
+# Quantifiers
+
+We often want to capture different patterns, such as characters that repeat, without specifying the entire string. Here is a simple guide to the symbols and their meanings: -
+
+-   `?`: 0 or 1 instances of the pattern
+
+-   `*`: 0 or more instances of the pattern
+
+-   `+`: 1 or more instances of the pattern
+
+-   `{m}`: m instances of the pattern (you can also specify `{m,}`, which is m or more instances)
+
+-   `{m, n}`: between m and n instances of the pattern
+
+For example, if we have a text that has different spellings of color with and without a u, we could extract all instances with a pattern:
+
+```{r}
+colors <- "In the UK, people spell it colour. In the US, we spell it color without the U."
+
+color_spellings <- "colou?r"
+
+str_extract_all(colors, color_spellings)
+```
+
+Another example would be identifying valid American phone numbers with the format XXX XXX XXXX. To do this, we will look for the following pattern:
+
+-   `\\d{3}`: exactly 3 digits
+-   `\\W*`: any number of non-word characters, including spaces, dashes, and parentheses
+-   `\\d{3}`: again, exactly 3 digits
+-   `\\W*`: again, any number of non-word characters, including spaces, dashes, and parentheses
+-   `\\d{4}`: exactly 4 digits
+
+```{r}
+phone_numbers <- c("1234567890", "512-000-4567", " 713-845-6789", "(713)876-1412", "892 709 4030", "(12) 98765-4321", "(41) 12 3456789")
+
+phone_regex <- "\\d{3}\\W*\\d{3}\\W*\\d{4}"
+
+# while they aren't formatted well because it keeps the symbols, it extracts only American numbers that have 3-3-4 digit patterns
+american_numbers <- str_extract(phone_numbers, phone_regex) 
+
+american_numbers 
+
+# we can then remove the symbols to fix the formatting:
+str_remove_all(american_numbers, "\\D")
+```
+
+## Making quantifiers non-greedy
+
+Quantifiers like `*` and `+` are greedy, meaning that they will try to match as many characters as possible. To limit them, we can use `?`. This is useful for situations where you want to find the smallest match possible, but also need to look for the possibility of longer patterns.
+
+```{r}
+greedy_example <- "'hello'"
+
+greedy_pattern <- "h.*l"
+nongreedy_pattern <- "h.*?l"
+
+str_extract(greedy_example, greedy_pattern)
+str_extract(greedy_example, nongreedy_pattern)
+```
+
+# Capturing Groups
+
+Capturing groups can help with repetitive sequences:
+
+```{r}
+repetitive_example <- c('x1y2z3', 'a5b6c7', 'abcdef', 'g1h2i3', '123456', 'm7n8o9', 'p0q1r2', 's3t4u5', '1a2b3c', 'y9z0a1')
+
+pattern_long <- "[a-z]\\d[a-z]\\d[a-z]\\d"
+pattern_captured <- "([a-z]\\d){3}"
+
+str_extract(repetitive_example, pattern_long)
+str_extract(repetitive_example, pattern_captured)
+```
+
+As well as extracting data:
+
+```{r}
+dates <- c("01-01-2026", "2-12-2021", "12/3/2000", "10/09/2002", "08/2/2023")
+
+date_pattern <- "(\\d{1,2})\\W(\\d{1,2})\\W(\\d{4})"
+
+str_match(dates, date_pattern) # str match extracts the strings that match the pattern AND the fields captured in a matrix
+```
+
+## Non-Capturing Groups
+Use `(?: ... )` to make a non-capturing group. 
+
+# Alternate (match a or b)
+
+The `|` can be used within capturing groups to specify multiple patterns to be captured.
+
+```{r}
+alternate_example <- "The pharmacy has Advil available"
+
+alternate_pattern <- "Advil|Motrin|Ibuprofin"
+
+str_extract(alternate_example, alternate_pattern)
+```
+
+# Backreferences
+
+Backreferences are useful to reference and reuse the text captured by a capturing group within the same regex pattern.
+
+```{r}
+backref <- c('1a1', '1a1a', '1a11', '1a11a1', '1aa1bb1', '1aa1aa')
+
+backref_pattern <- "(\\d)(.+)\\1\\2?" # this captures a number, followed by any number of characters more than 1 time
+# \\1 matches the same text as most recently matched by the 1st capturing group
+# \\2 matches the same text as most recently matched by the 2nd capturing group
+# finally, 
+str_match(backref, backref_pattern) # str match extracts the strings that match the pattern AND the fields captured in a matrix
+```
+
+An example where using backreferences is helpful is searching for repeat words within a text. Looking at a body of text, identifying a duplicate word typo isn't easily noticeable. The below regex pattern does the following:
+
+-   `\\b` at the beginning and end matches a word boundary
+
+-   `([A-Za-z]+)` identifies alphabetical characters that are at least 1 letter long
+
+-   the space followed by the + allows for spaces between the words
+
+-   the `\\1` is a backreference to the first capturing group and checks if that same pattern appears again
+
+```{r}
+paragraph <- "Through internships and projects, I gained valuable experience working with a team to develop analysis using Python and R data pipelines involving web scraping, data transformations, and cleaning. I also improved my writing skills in in a publication context, particularly how to translate complex data and legislation into findings that are informative, concise, and accessible to a broader audience."
+
+repeat_pattern <- "\\b([A-Za-z]+) +\\1\\b"
+
+str_match(paragraph, repeat_pattern)
+```
+
+# Lookaheads
+
+## Positive Lookahead
+A positive lookahead is structured as `x(?=y)`, which matches "x" only if "x" is followed by "y". 
+
+In the case below, we are only interested in currency amounts that are in USD: 
+```{r}
+dollars <-  c("100 USD", "80 CHF", "1,000 BRL", "1,000,000 USD", "currency is USD")
+
+dollars_pattern <- "[1-9][\\d,]*(?= USD)" # the first piece gets a number 1-9 (numbers that don't start with 0), then any number of digits 0-9 or a comma, then checks if the next text is " USD". 
+
+str_extract(dollars, dollars_pattern)
+```
+
+## Negative Lookahead
+
+A negative lookahead is structured as `x(?!y)`, which matches "x" only if "x" is followed by something other than "y". 
+
+In the case below, we are only interested in values that are not in USD: 
+```{r}
+dollars <-  c("100 USD", "80 CHF", "1000 BRL", "1000000 USD")
+
+dollars_pattern <- "\\b[1-9]\\d*\\b(?!\\sUSD)"
+
+str_extract(dollars, dollars_pattern)
+```
+
+# Lookbehinds
+
+## Positive Lookbehind
+Structured as `(?<=y)x`, matches "x" only if "x" is preceded by "y". 
+```{r}
+sports_teams <- c("San Francisco 49ers", "San Francisco Giants", "New York Giants", "SF Giants")
+
+teams_pattern <- "\\b(SF|San Francisco)\\b\\s+Giants"
+
+str_extract(sports_teams, teams_pattern)
+```
+
+## Negative Lookbehind
+Structured as `(?<!y)x`, matches "x" only if "x" is not preceded by "y". 
+
+```{r}
+currency_behind <- c("€20", "$30", "€100", "¥30")
+
+currency_pattern <- "(?<!€)\\b\\d+"
+
+str_extract(currency_behind, currency_pattern)
+```

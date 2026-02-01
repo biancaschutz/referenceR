@@ -1,0 +1,461 @@
+---
+title: "ggplot2"
+editor: visual
+toc: true
+format: 
+   html:
+     df-print: paged
+---
+
+# Basics
+
+The `ggplot()` function is the first step to building a data visualization, and has two main parameters:
+
+-   `data`: the first parameter is your dataframe
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(stringr)
+
+ggplot(data = starwars)
+```
+
+-   `mapping`: the aesthetic attributes of the plot, using `aes()`
+
+```{r}
+ggplot(data = starwars, aes(x = mass, y = height))
+```
+
+# Geometric Functions
+
+## One Variable
+
+### Continuous {#cont}
+
+An area plot is useful for showing quantities over time
+
+```{r}
+www <- data.frame("time" = 1:100, "usage" = as.vector(WWWusage))
+
+ggplot(www, aes(x = time, y = usage)) +
+  geom_area()
+```
+
+A histogram shows the distribution of a continuous variable:
+
+```{r}
+ggplot(www, aes(usage)) + 
+  geom_histogram(binwidth = 20)
+```
+
+Density plots draw the kernel density estimate, a smoothed version of the histogram.
+
+```{r}
+ggplot(www, aes(usage)) + 
+  geom_density()
+```
+
+Dot plots are similar to histograms:
+
+```{r}
+ggplot(www, aes(usage)) +
+  geom_dotplot()
+```
+
+A QQ-plot, comparing the quartiles of the theoretical and sample distributions, shows if a sample follows a specific distribution:
+
+```{r}
+ggplot(mtcars, aes(sample = mpg)) +
+  geom_qq() + # or use stat_qq
+  geom_qq_line()
+```
+
+### Discrete {#dis}
+
+Use a bar chart to display a single discrete variable. There are two ways to do this using ggplot:
+
+1.  Use `geom_bar()` to have ggplot calculate counts for you
+
+```{r}
+# here, we make cyl into a factor so that the axis does not have continuous labels (ex. no 5 showing bc there are no cars w/ value 5)
+ggplot(mtcars, aes(x = as.factor(cyl))) + 
+  geom_bar()
+```
+
+2.  Use dplyr and `geom_col()` to summarize the data yourself
+
+```{r}
+cyl_counts <- mtcars %>%
+  count(cyl = as.factor(cyl))
+
+ggplot(cyl_counts, aes(x = cyl, y = n)) + 
+  geom_col()
+```
+
+When making grouped bar charts, you can set the position to make stacked or side-by-side bars:
+
+```{r}
+ggplot(mtcars, aes(x = as.factor(cyl), group = am, fill = as.factor(am))) + 
+  geom_bar(position = "dodge")
+
+ggplot(mtcars, aes(x = as.factor(cyl), group = am, fill = as.factor(am))) + 
+  geom_bar(position = "fill")
+
+ggplot(mtcars, aes(x = as.factor(cyl), group = am, fill = as.factor(am))) + 
+  geom_bar(position = "stack") # default
+```
+
+## Two Variables
+
+### Both Continuous {#sec-2cont}
+
+Scatterplots are the primary visualization type when you have continuous x and y variables.
+
+```{r}
+ggplot(mtcars, aes(x = wt, y = mpg)) + 
+  geom_point()
+```
+
+You can also view these as text or labels:
+
+```{r}
+# these are ugly plots but they can be made prettier
+ggplot(mtcars, aes(x = wt, y = mpg, label = rownames(mtcars))) + 
+  geom_text()
+
+ggplot(mtcars, aes(x = wt, y = mpg, label = rownames(mtcars))) + 
+  geom_label()
+```
+
+You can also create lines:
+
+```{r}
+# either "connecting the dots"
+ggplot(www, aes(x = time, y = usage)) + 
+  geom_line()
+
+# or as a function 
+ggplot(www, aes(x = time, y = usage)) + 
+  geom_smooth(method = "lm")
+
+ggplot(www, aes(x = time, y = usage)) + 
+  geom_smooth()
+```
+
+A rug plot is displayed as marks along an axis. It is used to visualize the distribution of the data:
+
+```{r}
+ggplot(mtcars, aes(x = wt, y = mpg, label = rownames(mtcars))) + 
+  geom_point() +
+  geom_rug()
+```
+
+### One Discrete, One Continuous {#sec-1each}
+
+Bar plots are a good option, especially for summaries of data by group:
+
+```{r}
+mtcars_avg_mpg <- mtcars %>% 
+  group_by(cyl = as.factor(cyl)) %>%
+  summarize(avg_mpg = mean(mpg))
+
+ggplot(mtcars_avg_mpg, aes(x = cyl, y = avg_mpg)) + 
+  geom_col()
+```
+
+Boxplots, violin plots, and dotplots are useful for showing distributions of data:
+
+```{r}
+ggplot(mtcars, aes(x = as.factor(cyl), y = mpg)) + 
+  geom_boxplot()
+```
+
+### Both Discrete {#sec-2dis}
+
+```{r}
+ggplot(mtcars, aes(x = as.factor(cyl), y = as.factor(am))) + 
+  geom_jitter()
+
+ggplot(mtcars, aes(x = as.factor(cyl), y = as.factor(am))) + 
+  geom_count()
+```
+
+## Maps
+
+```{r}
+library(sf)
+geo <- read_sf("https://raw.githubusercontent.com/biancaschutz/WomensWorldCup2019/refs/heads/main/App/data/viewership.geo.json")
+
+ggplot() +
+      geom_sf(data = geo)
+```
+
+# Aesthetics {#aes}
+
+## Fill and color
+
+Fill changes the inside color of the geometry, and is primarily used with bar plots. Color changes the border of the geometry, and is used for scatterplots.
+
+```{r}
+# setting fill does this: 
+ggplot(mtcars_avg_mpg, aes(x = as.factor(cyl), 
+                           y = avg_mpg,
+                           fill = cyl)) +
+  geom_col()
+
+# whereas setting color does this: 
+ggplot(mtcars_avg_mpg, aes(x = as.factor(cyl), 
+                           y = avg_mpg,
+                           color = cyl)) +
+  geom_col()
+```
+
+```{r}
+# scatterplot with fill:
+ggplot(mtcars, aes(x = wt, y = mpg, fill = as.factor(cyl))) + 
+  geom_point()
+
+# scatterplot with color:
+ggplot(mtcars, aes(x = wt, y = mpg, color = as.factor(cyl))) + 
+  geom_point()
+```
+
+## Size
+
+Use `size` to change the size of geometries, such as scatterplot points.
+
+```{r}
+ggplot(mtcars, aes(x = wt, y = mpg, size = qsec)) + 
+  geom_point()
+```
+
+## Opacity
+
+Use `alpha` to change the opacity of geometries.
+
+```{r}
+ggplot(mtcars, aes(x = wt, y = mpg, alpha = qsec)) + 
+  geom_point()
+```
+
+## Line Type and Width
+
+These aren't used as often, but can still be helpful in certain situations:
+
+```{r}
+exp_long <- as.data.frame(USPersonalExpenditure) %>% tibble::rownames_to_column("type") %>%
+  pivot_longer(-type, names_to = "year", values_to = "expenditure")
+
+ggplot(exp_long, aes(x= year, y = expenditure, group = type, linetype = type)) + 
+  geom_line()
+```
+
+```{r}
+ggplot(mtcars, aes(x = wt, y = mpg)) + 
+  geom_point() + 
+    geom_smooth(method='lm', linewidth = .5)
+
+ggplot(mtcars_avg_mpg, aes(x = as.factor(cyl), 
+                           y = avg_mpg,
+                           color = cyl)) +
+  geom_col(linewidth = 3)
+```
+
+## Image {#img}
+
+```{r}
+library(ggimage)
+admissions <- read.csv("https://raw.githubusercontent.com/biancaschutz/rguides/refs/heads/main/ggimage_example/admissions.csv") %>%
+  mutate(img = str_c("ggimage_example", 
+                     str_sub(img, start = 2)))
+
+ggplot(admissions, aes(x = Rank_2019, y = Average_SAT, image = img)) + 
+  geom_image(size = .25)
+```
+
+# Adjustments
+
+## Labels {#labels}
+
+Use the `labs()` function to adjust the labels on your plot. `x` and `y` allow you to change the axis labels, `fill` and other aesthetics change the legend label, and `title`, `subtitle`, and `caption` are useful for changing other labels
+
+```{r}
+b <- ggplot(mtcars, aes(x = as.factor(cyl), 
+                   group = am, 
+                   fill = as.factor(am))) + 
+  geom_bar(position = "dodge")
+
+b
+
+lbl <- labs(x = "Number of Cylinders", 
+       y = "Number of Cars",
+       fill = "Transmission",
+       title = "Cars by Cylinder Number and Transmission Type",
+       subtitle = "Most cars are automatic and have 8 cylinders",
+       caption = "Created by Bianca")
+
+b + lbl
+```
+
+While this plot is an improvement, it is still not clear what the legend means. To fix this, we can also adjust the data itself to give the factor labels.
+
+```{r}
+b2 <- ggplot(mtcars, aes(x = as.factor(cyl), 
+                   group = am, 
+                   fill = factor(am, levels = c(0, 1), labels = c("Automatic", "Manual")))) + 
+  geom_bar(position = "dodge") + 
+  lbl
+
+b2
+```
+
+## Themes {#themes}
+
+You can change the theme of your plot, including themes from base R and from [ggthemes](https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/).
+
+```{r}
+b2 + theme_bw()
+
+b2 + theme_light()
+
+library(ggthemes) # there are also other themes from this package
+
+b2 + ggthemes::theme_tufte()
+```
+
+## Color Palettes {#pal}
+
+### Custom Colors
+
+R has hundreds of named colors which can be accessed with `colors()` and you can also use any hex code like `#FF0000`. See this [cheat sheet](https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf) for more information about choosing colors.
+
+```{r}
+s <- ggplot(mtcars, aes(x = wt, y = mpg, color = factor(am, levels = c(0, 1), labels = c("Automatic", "Manual")))) + 
+  geom_point() + 
+  labs(x = "Weight", y = "Miles Per Gallon", color = "Transmission")
+
+s + scale_color_manual(values = list('Automatic' = "red", 
+                                     'Manual' = "blue"))
+
+b2 + scale_fill_manual(values = list('Automatic' = "red", 
+                                     'Manual' = "blue"))
+```
+
+### Base R Palettes
+
+Options include `rainbow(n)`, `heat.colors(n)`, `terrain.colors(n)`, `topo.colors(n)`, and `cm.colors(n)`
+
+```{r}
+b2 + scale_fill_manual(values = rainbow(n = 2))
+```
+
+### RColorBrewer
+
+See the [website](https://colorbrewer2.org) for a list of all palettes. There are diverging palettes (good for ordinal color scales that range from negative to positive), sequential (for ordinal color scales), and qualitative (for data that is unordered).
+
+```{r}
+library(nycflights13)
+ggplot(mtcars, aes(x = wt, y = mpg, color = as.factor(cyl))) + 
+  geom_point() + 
+  scale_color_brewer(palette = "RdPu") + # sequential
+  labs(x = "Weight", y = "Miles Per Gallon", color = "Cylinders")
+
+flights_monthly <- flights %>% 
+  drop_na() %>%
+  filter(year == 2013) %>%
+  mutate(delay_level = case_when(dep_delay > 10 ~ "Delay",
+                                  between(dep_delay, -10, 10) ~ "On Time", 
+                                  dep_delay < -10 ~ "Early", 
+                                  .default = NA)) %>%
+  group_by(month, delay_level) %>%
+  count()
+  
+ggplot(flights_monthly, aes(x = as.factor(month), y = n, fill = factor(delay_level, levels = c("Delay", "On Time", "Early")))) + 
+  geom_col(position = "fill") + 
+  scale_fill_brewer(palette = "RdYlGn") + 
+  labs(fill = "Type", y = "% of flights", x = "month")
+
+b2 + scale_fill_brewer(palette = "Dark2") # qualitative
+```
+
+### Viridis
+
+Viridis has various palettes, that are especially useful for maps. See the documentation [here](https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html).
+
+```{r}
+ggplot(mtcars, aes(wt, mpg, color = factor(cyl))) + 
+  geom_point() +
+  viridis::scale_color_viridis(discrete=TRUE)
+```
+
+### Other
+
+[ggthemes](https://yutannihilation.github.io/allYourFigureAreBelongToUs/ggthemes/) has some nice palettes:
+
+```{r}
+library(scales)
+show_col(tableau_color_pal('Tableau 20')(6))
+
+ggplot(as.data.frame(Titanic), aes(x = Survived, y = Freq, fill = Class)) +
+  geom_col(position = "dodge") +
+  ggthemes::scale_fill_wsj()
+```
+
+If you're a Wes Anderson fan, there's a [package](https://github.com/karthik/wesanderson) for you:
+
+```{r}
+ggplot(as.data.frame(Titanic), aes(x = Survived, y = Freq, fill = Class)) +
+  geom_col(position = "dodge") +
+  scale_fill_manual(values = 
+                      wesanderson::wes_palette("AsteroidCity1"))
+```
+
+You also might find a palette from your favorite [tv show](https://github.com/Ryo-N7/tvthemes):
+
+```{r}
+ggplot(as.data.frame(Titanic), aes(x = Survived, y = Freq, fill = Class)) +
+  geom_col(position = "dodge") +
+  tvthemes::scale_fill_simpsons()
+```
+
+If you need a color palette from a scientific journal, R has those too:
+
+```{r}
+ggplot(as.data.frame(Titanic), aes(x = Survived, y = Freq, fill = Class)) +
+  geom_col(position = "dodge") +
+  ggsci::scale_fill_npg()
+```
+
+## X and Y Axis Range {#range}
+
+Change the min and max shown on the plot using `xlim()` and `ylim()`.
+
+```{r}
+ggplot(fivethirtyeight::nfltix_usa_avg %>% 
+         slice_max(order_by = avg_tix_price, n = 10), 
+       aes(x = team, y = avg_tix_price)) + 
+  geom_point() + 
+  ylim(150, 300) +
+  coord_flip()
+```
+
+## Dealing with long x-axis labels {#xaxis}
+
+It is good practice not to rotate your axis labels to make them fit, as it makes it harder to read your plot. Instead, rotate your entire plot:
+
+```{r}
+ggplot(fivethirtyeight::nfltix_usa_avg %>% 
+         slice_max(order_by = avg_tix_price, n = 10), 
+       aes(x = team, y = avg_tix_price)) + 
+  geom_point() + 
+  ylim(150, 300)
+
+ggplot(fivethirtyeight::nfltix_usa_avg %>% 
+         slice_max(order_by = avg_tix_price, n = 10), 
+       aes(x = team, y = avg_tix_price)) + 
+  geom_point() + 
+  ylim(150, 300) +
+  coord_flip()
+```

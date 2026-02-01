@@ -1,0 +1,262 @@
+---
+title: "StringR"
+toc: true
+editor: source
+format: 
+   html:
+     df-print: paged
+---
+
+For further reference, see the stringr documentation [here](https://stringr.tidyverse.org/), and this helpful [cheat sheet](https://github.com/rstudio/cheatsheets/blob/main/strings.pdf).
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+```{r}
+# install.packages(stringr)
+library(stringr)
+library(dplyr)
+```
+
+# String characteristics
+
+## Length
+
+```{r}
+fruits <- c("apple", "banana", "orange")
+
+str_length(fruits)
+```
+
+## Count Pattern
+
+Returns a vector of the same length as the input where each item is an integer representing the number of times `pattern` appears in the string.
+
+```{r}
+example <- "This string says the word string several times to see how many times the pattern 'string' appears"
+
+str_count(example, pattern = "string")
+```
+
+## Check for Pattern {#sec-check-for-pattern}
+
+`str_detect()` checks whether a string contains the pattern. This function, as well as `str_starts()` and `str_ends()`, have a parameter called `negate`, which inverts the resulting boolean vector (so if you want to find names that do not contain an L, set the negate parameter to `TRUE`).
+
+```{r}
+names <- c("John", "Julia", "Luke", "Lucia", "Clara")
+
+str_detect(names, "[lL]") # names that contain an L
+```
+
+`str_starts()` checks whether a string starts with a pattern.
+
+```{r}
+str_starts(names, "[lL]")
+```
+
+`str_ends()` checks whether a string ends with a pattern.
+
+```{r}
+str_ends(names, "[aA]")
+```
+
+`str_which()` returns the indices of strings that contain a pattern.
+
+```{r}
+str_which(names, "^L")
+```
+
+## Locate Indices of Pattern
+
+Use `str_locate()` or `str_locate_all()` to find the indices of where a pattern occurs in a string. `str_locate()` will find the first match, and `str_locate_all()` will find all matches.
+
+```{r}
+passwords <- c("8kZSaLmP", "P2SAse20", "odA31BWK")
+
+str_locate(passwords, "\\d") # find the first number
+
+str_locate_all(passwords, "\\d")
+```
+
+# Sorting
+
+To sort the indices (not the strings themselves), use `str_order()`:
+
+```{r}
+names <- c("Marco", "Anthony", "Jack", "Brendan")
+
+str_order(names)
+```
+
+To sort the strings themselves, use `str_sort()`:
+
+```{r}
+str_sort(names)
+```
+
+# Upper-case and lower-case
+
+There are functions that change the case of a string:
+
+-   `str_to_upper()` converts to upper case.
+
+-   `str_to_lower()` converts to lower case.
+
+-   `str_to_title()` converts to title case, where only the first letter of each word is capitalized.
+
+-   `str_to_sentence()` convert to sentence case, where only the first letter of sentence is capitalized.
+
+# Splitting and Combining
+
+## str_split functions
+
+There are 4 functions that split strings, depending on the output you need:
+
+-   `str_split(string, pattern)`: use the `simplify` parameter to return a list when `simplify=FALSE` and a matrix if `TRUE` where each list item is a character vector with all split character strings
+
+```{r}
+# for example, we could analyze the charged language that Trump typically tweets with to see what words he tweets most often:
+trump_tweets <- read.csv("https://raw.githubusercontent.com/biancaschutz/rguides/refs/heads/main/trump_tweets.csv")$Text
+
+split_on <- '[\\W,\\."]*\\s[\\W,\\."]*'
+
+list_of_words <- unlist(
+  str_split(
+    string = str_to_lower(trump_tweets), pattern = split_on, simplify = FALSE))
+# if you use simplify = TRUE, it will instead return a matrix, not a list
+
+head(data.frame(table(list_of_words)) %>% 
+       # filtering out less explanatory words such as "the", etc. 
+       filter(str_length(list_of_words) > 4, !list_of_words %in% c("america", "united", "states", "these", "their")) %>% 
+       arrange(desc(Freq)), 5)
+```
+
+-   `str_split_1()`: use for a single string
+
+```{r}
+longest_tweet <- trump_tweets[order(nchar(trump_tweets), trump_tweets, decreasing = TRUE)][[1]]
+
+length(str_split_1(longest_tweet, split_on)) # the longest word is 510 words long
+```
+
+-   `str_split_fixed()`: returns a matrix with `n` columns
+
+```{r}
+options(warn=-1)
+
+friends <- readLines("https://raw.githubusercontent.com/biancaschutz/rguides/refs/heads/main/myfriends.txt")
+
+friends_mat <- str_split_fixed(friends, "\\b\\s+\\b", n = 2)
+
+head(friends_mat)
+```
+
+-   `str_split_i()`: returns the `i`th item in the split string
+
+```{r}
+head(str_split_i(friends, "\\b\\s+\\b", i = 2))
+```
+
+## Combine strings
+
+Use `str_c` to combine different string objects
+
+```{r}
+area_code <- "123"
+number <- "456-7890"
+
+str_c(area_code, number, sep = "-")
+```
+
+Use `str_flatten` for a vector of characters:
+
+```{r}
+phone <- c("123", "456", "7890")
+
+str_flatten(phone, collapse = "-")
+```
+
+## String duplicates
+
+Use `str_dup()` to repeat a string `times` times.
+
+```{r}
+goowls <- "Go Rice Owls!"
+
+str_dup(goowls, 5)
+```
+
+Use `str_unique()` to get only unique strings
+
+```{r}
+str_unique(friends_mat[,1])
+```
+
+# Replacement {#sec-replacement}
+
+To replace one part of a string with another, you can either use the `gsub()` function from base R, or the `str_replace()` functions from stringr. `str_replace()` only replaces the first instance of the pattern, and `str_replace_all()` replaces all instances.
+
+```{r}
+vars <- c("var1", "var2var2", "var3")
+
+str_replace(vars, "var", "variable")
+
+str_replace(vars, "var", "variable")
+```
+
+# Subset Strings
+
+## Removal {#sec-removal}
+
+To remove part of a string, use the `str_remove()` or `str_remove_all()` functions.
+
+```{r}
+responses <- c("Y", "Yes", "Nope", "Yeah", "Y", "Yes", "Y", "y", "N", "no", "y")
+
+str_remove(responses, "[^YyNn]")
+
+str_remove_all(responses, "[^YyNn]") # now we have just Ys and Ns, this will help with ensuring datasets are coded the same across the board
+```
+
+## By Index
+
+Use `str_sub()` to extract parts of a string by their indices.
+
+```{r}
+currency <- c("$10", "€100", "¥187", "£32")
+
+str_sub(currency, start = 1, end = 1)
+```
+
+## Subset Vector Of Strings
+
+To subset a vector of multiple strings so it only contains those that have the pattern, use `str_subset()`.
+
+```{r}
+names <- c("John Smith", "George Washington", "Alexander", "Quincy Adams")
+
+str_subset(names, "\\w+\\s+\\w+") # only full names (first and last)
+```
+
+## Extract Patterns {#sec-extract-patterns}
+
+To extract part of a string, use the `str_extract()` or `str_match()` functions.
+
+`str_extract()` and `str_extract_all()` return the first match and all matches as a vector, respectively.
+
+```{r}
+names2 <- c("Hugo Riley", "Allison Slater", "Anna Hess", "Emmanuel Malone", "Abel Lee", "Jerry Alex Walter")
+
+str_extract(names2, "\\b\\w+\\b") # extract the first name
+
+str_extract_all(names2, "\\b\\w+\\b") # extract all names in each string
+```
+
+`str_match()` and `str_match_all()` return matrices rather than vectors, where each row is a string and each column is an instance of the pattern. For example, the 2nd row and 3rd column would be the 3rd instance of the pattern in the 2nd string.
+
+```{r}
+str_match(names2, "\\b\\w+\\b") # extract the first name
+
+str_match_all(names2, "\\b\\w+\\b") # extract all names in each string
+```

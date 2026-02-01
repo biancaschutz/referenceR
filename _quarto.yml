@@ -1,0 +1,37 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "B's R Reference Manual"
+  navbar:
+    left:
+      - href: index.qmd
+        text: "Home"
+      - text: "Data Transformation"
+        menu: 
+          - href: dplyr.qmd
+            text: "dplyr"
+      - text: "String Manipulation"
+        menu:
+          - href: regex.qmd
+            text: "Regex"
+          - href: stringr.qmd
+            text: "stringr"
+      - text: "Visualization"
+        menu: 
+          - href: ggplot2.qmd
+            text: "ggplot"
+      - text: "Examples"
+        menu:
+          - href: WranglingExample.qmd
+            text: "Wrangling Example: Movies"
+
+format:
+  html:
+    theme: minty
+    css: styles.css
+    toc: true
+
+editor: visual
+

@@ -1,0 +1,49 @@
+---
+title: "Index"
+toc: true
+---
+
+# Data Wrangling
+
+## Data Manipulation
+
+How do I...
+
+-   Summarize data by group?
+    -   [Count observations](dplyr.qmd#sec-count-data)
+    -   [Other calculations](dplyr.qmd#sec-summarize-data)
+-   [Combine two datasets?](dplyr.qmd#sec-joining-data)
+-   [Make data wide or long?](dplyr.qmd#sec-long-and-wide-data)
+-   [Create a new column based on existing columns?](dplyr.qmd#sec-mutation)
+-   [Keep or drop observations (filter) based on conditions?](dplyr.qmd#sec-keep-or-drop-observations)
+-   [Keep or drop columns?](dplyr.qmd#sec-select)
+-   [Reorder or sort data?](dplyr.qmd#sec-ordering)
+
+## String Manipulation
+
+How do I...
+
+-   [Remove text from a string?](stringr.qmd#sec_removal)
+-   [Extract text from a string?](stringr.qmd#sec-extract-patterns)
+-   [Replace text with other text?](stringr.qmd#sec-replacement)
+-   [Check if a string contains a pattern?](stringr.qmd#sec-check-for-pattern)
+-   [Create a pattern, or sequence of characters that specifies a match pattern in text, such as extracting all numbers?](regex.qmd)
+
+# Data Visualization
+
+## ggplot2
+
+How do I...
+
+-   [Visualize one discrete variable? (ex. bar chart)](ggplot2.qmd#dis)
+-   [Visualize one continuous variable? (ex. histogram)](ggplot2.qmd#cont)
+-   [Visualize two continuous variables? (ex. scatterplot)](ggplot2.qmd#sec-2cont)
+-   [Visualize one discrete, and one continuous variable? (ex. bar chart)](ggplot2.qmd#sec-1each)
+-   [Visualize two discrete variables? (ex. jitters)](ggplot2.qmd#sec-2dis)
+-   [Make a map?](ggplot2.qmd#map)
+-   [Change the colors, line type, and other aesthetics?](#aes)
+-   [Add labels?](ggplot2.qmd#labels)
+-   [Change the theme?](ggplot2.qmd#themes)
+-   [Change the color scheme?](ggplot2.qmd#pal)
+-   [Deal with overlapping x-axis labels?](ggplot2.qmd#xaxis)
+-   [Adjust the range/scale of my axes?](ggplot2.qmd#range)

@@ -20,7 +20,7 @@ set.seed(1738) # set seed for any random operations
 
 ```{r}
 # Load in our dataset
-netflix <- read.csv("https://raw.githubusercontent.com/biancaschutz/rguides/refs/heads/main/movies.csv")
+netflix <- read.csv("https://raw.githubusercontent.com/biancaschutz/referenceR/refs/heads/main/movies.csv")
 ```
 
 ## Structure
@@ -350,7 +350,7 @@ ggplot(by_genre, aes(reorder(main_genre, avg_rating), avg_rating)) +
 Oftentimes, we will need to combine datasets based on particular columns. For example, we will use a dataset about actor popularity on IMDB.
 
 ```{r}
-actors <- read.csv("https://raw.githubusercontent.com/biancaschutz/rguides/refs/heads/main/celebrity_data.csv")
+actors <- read.csv("https://raw.githubusercontent.com/biancaschutz/referenceR/refs/heads/main/celebrity_data.csv")
 
 head(actors)
 ```

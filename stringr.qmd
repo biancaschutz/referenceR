@@ -117,7 +117,7 @@ There are 4 functions that split strings, depending on the output you need:
 
 ```{r}
 # for example, we could analyze the charged language that Trump typically tweets with to see what words he tweets most often:
-trump_tweets <- read.csv("https://raw.githubusercontent.com/biancaschutz/rguides/refs/heads/main/trump_tweets.csv")$Text
+trump_tweets <- read.csv("https://raw.githubusercontent.com/biancaschutz/referenceR/refs/heads/main/trump_tweets.csv")$Text
 
 split_on <- '[\\W,\\."]*\\s[\\W,\\."]*'
 
@@ -145,7 +145,7 @@ length(str_split_1(longest_tweet, split_on)) # the longest word is 510 words lon
 ```{r}
 options(warn=-1)
 
-friends <- readLines("https://raw.githubusercontent.com/biancaschutz/rguides/refs/heads/main/myfriends.txt")
+friends <- readLines("https://raw.githubusercontent.com/biancaschutz/referenceR/refs/heads/main/myfriends.txt")
 
 friends_mat <- str_split_fixed(friends, "\\b\\s+\\b", n = 2)
 

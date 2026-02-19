@@ -10,6 +10,9 @@ format:
 # Exploratory Data Analysis
 
 For this document, we will be using a dataset scraped from IMDB's top Netflix movies and TV shows, obtained from [Kaggle](https://www.kaggle.com/datasets/bharatnatrayn/movies-dataset-for-feature-extracion-prediction?select=movies.csv).
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
 
 ```{r}
 # Set up

@@ -6,9 +6,11 @@ format:
    html:
      df-print: paged
      fig-align: 'center'
-     warning: false
-     message: false
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
 
 # Use of color in visualization
 
@@ -377,6 +379,7 @@ There are variety of color scale functions in R. It can get pretty messy, since 
 | ...                       | ...       | ...        | ...          |
 
 ## Colorspace
+
 The `colorspace` package creates some order with scale naming conventions `scale_<aesthetic>_<datatype>_<colorscale>()`, which contains:
 
 -   `<aesthetic>`: the name of the aesthetic (`fill`, `color`, `colour`)
@@ -385,9 +388,10 @@ The `colorspace` package creates some order with scale naming conventions `scale
 
 -   `<colorscale>`: type of color scale (`qualitative`, `sequential`, `diverging`, `divergingx`)
 
-Which makes functions more clear, such as `scale_color_discrete_qualitative()`. 
+Which makes functions more clear, such as `scale_color_discrete_qualitative()`.
 
 For example, these do the same thing:
+
 ```{r}
 #| fig-height: 3
 #| layout-ncol: 2
@@ -405,7 +409,9 @@ p +
 ```
 
 ## Other Settings
+
 You can also set `breaks`, `labels`, and other specifications for the scale:
+
 ```{r}
 #| fig-height: 3
 p + 
@@ -416,18 +422,19 @@ p +
   )
 ```
 
-
 ## Common qualitative palettes
 
 ### Best Practice: Set Colors Manually
 
-Discrete, qualitative scales are often best set manually. 
+Discrete, qualitative scales are often best set manually.
+
 ```{r}
 ggplot(temperatures, aes(day_of_year, temperature, color = location)) +
   geom_line(linewidth = 1)
 ```
 
-A good option is the `ggthemes` `scale_color_colorblind()`, but there are some issues, such as the black standing out almost like a highlight, and the blue and green looking relatively similar. 
+A good option is the `ggthemes` `scale_color_colorblind()`, but there are some issues, such as the black standing out almost like a highlight, and the blue and green looking relatively similar.
+
 ```{r}
 library(ggthemes)
 ggplot(temperatures, aes(day_of_year, temperature, color = location)) +
@@ -435,7 +442,8 @@ ggplot(temperatures, aes(day_of_year, temperature, color = location)) +
   scale_color_colorblind()
 ```
 
-Instead, assigning colors manually is preferable to have full control: 
+Instead, assigning colors manually is preferable to have full control:
+
 ```{r}
 library(ggthemes)
 ggplot(temperatures, aes(day_of_year, temperature, color = location)) +
@@ -446,10 +454,12 @@ ggplot(temperatures, aes(day_of_year, temperature, color = location)) +
                                 'Chicago' = "#F0E442"))
 ```
 
-You can access hex codes of palettes using functions like `*_pal()` for `ggthemes`, `brewer.pal`, and `paletteer_d`/`paletteer_c` for a [full list of color palettes in R](https://r-charts.com/color-palettes/) using the `paletteer` package. 
+You can access hex codes of palettes using functions like `*_pal()` for `ggthemes`, `brewer.pal`, and `paletteer_d`/`paletteer_c` for a [full list of color palettes in R](https://r-charts.com/color-palettes/) using the `paletteer` package.
 
 ### Okabe-Ito Scale
+
 This color scale is good for all color-vision deficiencies and is therefore a great option for qualitative coloring:
+
 ```{r}
 #| fig-height: .5
 #| fig-width: 8
@@ -483,7 +493,8 @@ ggplot(pal, aes(x = i, y = 1, fill = col)) +
   scale_colour_manual(values=labels)
 ```
 
-### Other Palettes 
+### Other Palettes
+
 The `RColorBrewer` package has good qualitative palettes. Use functions `scale_fill_brewer(palette = "Set1")` and `scale_color_brewer(palette = "Set1")`.
 
 ```{r}
@@ -634,6 +645,7 @@ p +
 ```
 
 These are all of the discrete palettes available through `colorspace`:
+
 ```{r}
 #| echo: false
 colorspace::hcl_palettes(type = "Qualitative", plot = TRUE)
@@ -736,6 +748,7 @@ p +
 ```
 
 These are all of the sequential palettes available through `colorspace`:
+
 ```{r}
 #| echo: false
 #| fig-width: 10
@@ -745,6 +758,7 @@ colorspace::hcl_palettes(type = "sequential", plot = TRUE)
 ## Common diverging palettes
 
 All colorspace diverging palettes:
+
 ```{r}
 #| echo: false
 colorspace::hcl_palettes(type = "diverging", plot = TRUE, n = 9)

@@ -8,6 +8,9 @@ format:
      other-links:
       - text: dplyr documentation
         href: https://dplyr.tidyverse.org/
+     fig-align: 'center'
+     warning: false
+     message: false
 ---
 
 # Keep or Drop Columns

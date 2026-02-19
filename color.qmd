@@ -6,6 +6,8 @@ format:
    html:
      df-print: paged
      fig-align: 'center'
+     warning: false
+     message: false
 ---
 
 # Use of color in visualization

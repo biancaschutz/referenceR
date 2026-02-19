@@ -6,6 +6,8 @@ format:
    html:
      df-print: paged
      fig-align: 'center'
+     warning: false
+     message: false
 ---
 
 # Basics
@@ -15,6 +17,8 @@ The `ggplot()` function is the first step to building a data visualization, and 
 -   `data`: the first parameter is your dataframe
 
 ```{r}
+#| message: false
+#| warning: false
 library(ggplot2)
 library(dplyr)
 library(tidyr)

@@ -1,6 +1,12 @@
 ---
 title: "Index"
 toc: true
+format: 
+   html:
+     df-print: paged
+     fig-align: 'center'
+     warning: false
+     message: false
 ---
 
 # Data Wrangling

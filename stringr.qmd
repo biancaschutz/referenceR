@@ -1,10 +1,13 @@
 ---
 title: "StringR"
+editor: visual
 toc: true
-editor: source
 format: 
    html:
      df-print: paged
+     fig-align: 'center'
+     warning: false
+     message: false
 ---
 
 For further reference, see the stringr documentation [here](https://stringr.tidyverse.org/), and this helpful [cheat sheet](https://github.com/rstudio/cheatsheets/blob/main/strings.pdf).

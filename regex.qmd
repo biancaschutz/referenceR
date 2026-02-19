@@ -1,9 +1,13 @@
 ---
-title: "Regex"
+title: "regex"
+editor: visual
 toc: true
 format: 
    html:
      df-print: paged
+     fig-align: 'center'
+     warning: false
+     message: false
 ---
 
 To understand the functions used from the `stringr` package, see the [stringr guide](stringr.qmd)
@@ -103,7 +107,9 @@ word_boundaries <- "\\w*d\\b"
 
 str_match_all(sentence, word_boundaries)
 ```
+
 ## Beginning and end
+
 Use the `^` to indicate that an expression must occur at the beginning of a string, and use the `$` to indicate it is at the end. For example, if I wanted to check how many sentences begin with "I":
 
 ```{r}
@@ -116,7 +122,9 @@ sentence_begins_w_i <- "^I"
 
 str_match(sentences, sentence_begins_w_i)
 ```
+
 Or check which strings are a paragraph (end with a newline and valid punctuation):
+
 ```{r}
 paragraphs <- c("Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer possim assum. Typi non habent claritatem insitam; est usus legentis in iis qui facit eorum claritatem. Investigationes demonstraverunt lectores legere me lius quod ii legunt saepius.\n",
                 # note that the below string contains the valid pattern, but it is not at the end of the string
@@ -213,7 +221,8 @@ str_match(dates, date_pattern) # str match extracts the strings that match the p
 ```
 
 ## Non-Capturing Groups
-Use `(?: ... )` to make a non-capturing group. 
+
+Use `(?: ... )` to make a non-capturing group.
 
 # Alternate (match a or b)
 
@@ -262,9 +271,11 @@ str_match(paragraph, repeat_pattern)
 # Lookaheads
 
 ## Positive Lookahead
-A positive lookahead is structured as `x(?=y)`, which matches "x" only if "x" is followed by "y". 
 
-In the case below, we are only interested in currency amounts that are in USD: 
+A positive lookahead is structured as `x(?=y)`, which matches "x" only if "x" is followed by "y".
+
+In the case below, we are only interested in currency amounts that are in USD:
+
 ```{r}
 dollars <-  c("100 USD", "80 CHF", "1,000 BRL", "1,000,000 USD", "currency is USD")
 
@@ -275,9 +286,10 @@ str_extract(dollars, dollars_pattern)
 
 ## Negative Lookahead
 
-A negative lookahead is structured as `x(?!y)`, which matches "x" only if "x" is followed by something other than "y". 
+A negative lookahead is structured as `x(?!y)`, which matches "x" only if "x" is followed by something other than "y".
 
-In the case below, we are only interested in values that are not in USD: 
+In the case below, we are only interested in values that are not in USD:
+
 ```{r}
 dollars <-  c("100 USD", "80 CHF", "1000 BRL", "1000000 USD")
 
@@ -289,7 +301,9 @@ str_extract(dollars, dollars_pattern)
 # Lookbehinds
 
 ## Positive Lookbehind
-Structured as `(?<=y)x`, matches "x" only if "x" is preceded by "y". 
+
+Structured as `(?<=y)x`, matches "x" only if "x" is preceded by "y".
+
 ```{r}
 sports_teams <- c("San Francisco 49ers", "San Francisco Giants", "New York Giants", "SF Giants")
 
@@ -299,7 +313,8 @@ str_extract(sports_teams, teams_pattern)
 ```
 
 ## Negative Lookbehind
-Structured as `(?<!y)x`, matches "x" only if "x" is not preceded by "y". 
+
+Structured as `(?<!y)x`, matches "x" only if "x" is not preceded by "y".
 
 ```{r}
 currency_behind <- c("€20", "$30", "€100", "¥30")

@@ -5,6 +5,7 @@ toc: true
 format: 
    html:
      df-print: paged
+     fig-align: 'center'
 ---
 
 # Basics
@@ -267,7 +268,7 @@ ggplot(mtcars_avg_mpg, aes(x = as.factor(cyl),
 
 ```{r}
 library(ggimage)
-admissions <- read.csv("https://raw.githubusercontent.com/biancaschutz/rguides/refs/heads/main/ggimage_example/admissions.csv") %>%
+admissions <- read.csv("https://raw.githubusercontent.com/biancaschutz/referenceR/refs/heads/main/ggimage_example/admissions.csv") %>%
   mutate(img = str_c("ggimage_example", 
                      str_sub(img, start = 2)))
 
@@ -329,7 +330,7 @@ b2 + ggthemes::theme_tufte()
 
 ### Custom Colors
 
-R has hundreds of named colors which can be accessed with `colors()` and you can also use any hex code like `#FF0000`. See this [cheat sheet](https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf) for more information about choosing colors.
+R has hundreds of named colors which can be accessed with `colors()` and you can also use any hex code like `#FF0000`. See this [cheat sheet](https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf) for more information about choosing colors, or [this guide](color.qmd) I wrote based on lectures from my UT data visualization class.
 
 ```{r}
 s <- ggplot(mtcars, aes(x = wt, y = mpg, color = factor(am, levels = c(0, 1), labels = c("Automatic", "Manual")))) + 

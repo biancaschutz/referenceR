@@ -21,7 +21,9 @@ website:
       - text: "Visualization"
         menu: 
           - href: ggplot2.qmd
-            text: "ggplot"
+            text: "ggplot basics"
+          - href: color.qmd
+            text: "Color"
       - text: "Examples"
         menu:
           - href: WranglingExample.qmd
@@ -29,7 +31,7 @@ website:
 
 format:
   html:
-    theme: minty
+    theme: pulse
     css: styles.css
     toc: true
 

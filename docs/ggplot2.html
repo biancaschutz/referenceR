@@ -161,7 +161,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="dropdown-menu" aria-labelledby="nav-menu-visualization">    
         <li>
     <a class="dropdown-item" href="./ggplot2.html">
- <span class="dropdown-text">ggplot</span></a>
+ <span class="dropdown-text">ggplot basics</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./color.html">
+ <span class="dropdown-text">Color</span></a>
   </li>  
     </ul>
   </li>
@@ -750,7 +754,7 @@ Attaching package: 'dplyr'</code></pre>
 <h2 class="anchored" data-anchor-id="img">Image</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggimage)</span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>admissions <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/biancaschutz/rguides/refs/heads/main/ggimage_example/admissions.csv"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>admissions <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"https://raw.githubusercontent.com/biancaschutz/referenceR/refs/heads/main/ggimage_example/admissions.csv"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">img =</span> <span class="fu">str_c</span>(<span class="st">"ggimage_example"</span>, </span>
 <span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">str_sub</span>(img, <span class="at">start =</span> <span class="dv">2</span>)))</span>
 <span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a></span>
@@ -857,7 +861,7 @@ Attaching package: 'dplyr'</code></pre>
 <h2 class="anchored" data-anchor-id="pal">Color Palettes</h2>
 <section id="custom-colors" class="level3">
 <h3 class="anchored" data-anchor-id="custom-colors">Custom Colors</h3>
-<p>R has hundreds of named colors which can be accessed with <code>colors()</code> and you can also use any hex code like <code>#FF0000</code>. See this <a href="https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf">cheat sheet</a> for more information about choosing colors.</p>
+<p>R has hundreds of named colors which can be accessed with <code>colors()</code> and you can also use any hex code like <code>#FF0000</code>. See this <a href="https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf">cheat sheet</a> for more information about choosing colors, or <a href="./color.html">this guide</a> I wrote based on lectures from my UT data visualization class.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(mtcars, <span class="fu">aes</span>(<span class="at">x =</span> wt, <span class="at">y =</span> mpg, <span class="at">color =</span> <span class="fu">factor</span>(am, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Automatic"</span>, <span class="st">"Manual"</span>)))) <span class="sc">+</span> </span>
 <span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>

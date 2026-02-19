@@ -1,0 +1,789 @@
+---
+title: "Colors"
+editor: visual
+toc: true
+format: 
+   html:
+     df-print: paged
+     fig-align: 'center'
+---
+
+# Use of color in visualization
+
+1.  Distinguish categories (qualitative)
+
+```{r}
+#| echo: false
+#| warning: false
+#| fig-height: .5
+#| fig-width: 8
+library(ggplot2)
+library(see)
+library(RColorBrewer)
+
+pal <- data.frame("col" = RColorBrewer::brewer.pal(7, "Set1"), i = 1:7)
+
+palette_builder <- function(p) {
+  l <- list()
+  for (i in 1:length(p)) {
+    l[p[i]] <- p[i]
+  }
+  l
+}
+
+scale <- palette_builder(pal$col)
+ggplot(pal, aes(x = i, y = 1, fill = col)) + 
+  geom_tile() + 
+  geom_text(aes(x = i, label = col)) + 
+  scale_y_continuous(limits = c(.5, 1.5), expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme(
+    legend.position = "none",
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    plot.margin = margin(0,0,0,0),
+    axis.ticks.length = unit(0, "pt")) +
+  scale_fill_manual(values = scale)
+```
+
+2.  Represent numeric values (sequential)
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: .5
+#| fig-width: 8
+library(viridis)
+
+pal <- data.frame("col" = viridis(7), i = 1:7)
+
+scale <- palette_builder(pal$col)
+ggplot(pal, aes(x = i, y = 1, fill = col)) + 
+  geom_tile() + 
+  geom_text(aes(x = i, label = col)) + 
+  scale_y_continuous(limits = c(.5, 1.5), expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme(
+    legend.position = "none",
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    plot.margin = margin(0,0,0,0),
+    axis.ticks.length = unit(0, "pt")) +
+  scale_fill_manual(values = scale)
+```
+
+3.  Represent numeric values (diverging)
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: .5
+#| fig-width: 8
+
+pal <- data.frame("col" = RColorBrewer::brewer.pal(7, "PiYG"), i = 1:7)
+
+scale <- palette_builder(pal$col)
+ggplot(pal, aes(x = i, y = 1, fill = col)) + 
+  geom_tile() + 
+  geom_text(aes(x = i, label = col)) + 
+  scale_y_continuous(limits = c(.5, 1.5), expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme(
+    legend.position = "none",
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    plot.margin = margin(0,0,0,0),
+    axis.ticks.length = unit(0, "pt")) +
+  scale_fill_manual(values = scale)
+```
+
+4.  Highlight
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: .5
+#| fig-width: 8
+library(colorspace)
+p <- c(sequential_hcl(4, "Light Grays"), ggthemes::fivethirtyeight_pal()(3))
+
+pal <- data.frame("col" = p, i = 1:7)
+
+scale <- palette_builder(pal$col)
+ggplot(pal, aes(x = i, y = 1, fill = col)) + 
+  geom_tile() + 
+  geom_text(aes(x = i, label = col)) + 
+  scale_y_continuous(limits = c(.5, 1.5), expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme(
+    legend.position = "none",
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    plot.margin = margin(0,0,0,0),
+    axis.ticks.length = unit(0, "pt")) +
+  scale_fill_manual(values = scale)
+```
+
+Using color is good for differentiating between groups, but if you need exact values for numeric or continuous data, color cannot provide that level of detail.
+
+## Qualitative scales
+
+Set1 is likely the better choice with small dots, where stronger or darker colors are more useful.
+
+```{r}
+#| echo: false
+#| layout-ncol: 3
+#| fig-height: 6
+
+plot <- ggplot(iris, 
+               aes(x = Petal.Length, 
+                   y = Sepal.Length, 
+                   color = Species, 
+                   fill = Species)) +
+  
+  geom_point(alpha = .8)
+  
+
+plot + scale_color_okabeito() + ggtitle("palette = scale_color_okabeito()")
+
+plot + scale_color_brewer(palette = "Set3") + 
+  ggtitle("palette = scale_color_brewer('Set3')")
+
+plot + scale_color_brewer(palette = "Set1") + 
+  ggtitle("palette = scale_color_brewer('Set1')")
+```
+
+## Sequential scales
+
+```{r}
+#| echo: false
+#| message: false
+library(dplyr)
+temperatures <- read.csv("https://wilkelab.org/DSC385/datasets/tempnormals.csv") |>
+  mutate(
+    location = factor(
+      location, levels = c("Death Valley", "Houston", "San Diego", "Chicago")
+    )
+  ) |>
+  select(location, day_of_year, month, temperature)
+
+temps_months <- read.csv("https://wilkelab.org/DSC385/datasets/tempnormals.csv") |>
+  group_by(location, month_name) |>
+  summarize(mean = mean(temperature)) |>
+  mutate(
+    month = factor(
+      month_name,
+      levels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", 
+                 "Aug", "Sep", "Oct", "Nov", "Dec")
+    ),
+    location = factor(
+      location, levels = c("Death Valley", "Houston", "San Diego", "Chicago")
+    )
+  ) |>
+  select(-month_name)
+```
+
+Some color scales might be more intuitive, such as the inferno scale with temperatures.
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+#| fig-height: 3
+
+ggplot(temps_months, aes(x = month, y = location, fill = mean)) + 
+  geom_tile(color = "white") + 
+  coord_equal() + 
+  scale_fill_viridis_c() +
+  labs(fill = "temperature", y = NULL) +
+  theme_void() + 
+  theme(axis.text.x = element_text(),
+        axis.text.y = element_text(hjust = 1))
+
+ggplot(temps_months, aes(x = month, y = location, fill = mean)) + 
+  geom_tile(color = "white") + 
+  coord_equal() + 
+  scale_fill_viridis_c(option = "inferno") +
+  labs(fill = "temperature", y = NULL) +
+  theme_void() + 
+  theme(axis.text.x = element_text(),
+        axis.text.y = element_text(hjust = 1))
+```
+
+## Diverging scales
+
+With different color palettes, the area in the middle tends to have lighter colors, but the range that is lightly colored varies between palettes. On the left, we see a larger range, whereas in the centerght, it's a smaller range. A larger range might not show enough detail with values in the middle, while a smaller range makes it difficult to read. The final color scale on the right is a good in-between.
+
+```{r}
+#| echo: false
+#| layout-ncol: 3
+
+get_lower_tri<-function(cormat){
+    cormat[upper.tri(cormat, diag = FALSE)] <- NA
+    return(cormat)
+  }
+  # Get upper triangle of the correlation matrix
+  get_upper_tri <- function(cormat){
+    cormat[lower.tri(cormat, diag = FALSE)]<- NA
+    return(cormat)
+  }
+
+mtcars_cor <- mtcars %>% 
+  tidyr::drop_na() %>% 
+  cor()
+upper_tri <- get_upper_tri(mtcars_cor)
+
+library(reshape2)
+melted_cormat <- melt(upper_tri, na.rm = TRUE)
+
+library(colorspace)
+ggplot(melted_cormat, aes(x = Var1, y = Var2, fill = value)) + 
+  geom_tile(color = "white") +
+  scale_fill_distiller(name = "correlation", 
+                       palette = "PiYG", 
+                       na.value = "white",
+                       direction = 1,
+                       breaks = c(-1, -.5, 0, .5, 1),
+                       limits = c(-1, 1)) +
+  theme_void() +
+  scale_x_discrete(position = "top") +
+  theme(axis.text.x = element_text(),
+        axis.text.y = element_text(hjust = 1),
+        legend.position = "inside",
+        legend.direction = "horizontal",
+        legend.title.position = "top",
+        legend.title = element_text(hjust = .5),
+        legend.position.inside = c(.75,.25)) +
+  coord_fixed() +
+  ggtitle("Too much whitespace, RColorBrewer PiYG")
+
+library(rcartocolor)
+ggplot(melted_cormat, aes(x = Var1, y = Var2, fill = value)) + 
+  geom_tile(color = "white") +
+  scale_fill_carto_c(name = "correlation", 
+                     palette = "Earth",
+                       na.value = "white",
+                       direction = 1,
+                       breaks = c(-1, -.5, 0, .5, 1),
+                       limits = c(-1, 1)) +
+  theme_void() +
+  scale_x_discrete(position = "top") +
+  theme(axis.text.x = element_text(),
+        axis.text.y = element_text(hjust = 1),
+        legend.position = "inside",
+        legend.direction = "horizontal",
+        legend.title.position = "top",
+        legend.title = element_text(hjust = .5),
+        legend.position.inside = c(.75,.25)) +
+  coord_fixed() +
+  ggtitle("Too little whitespace, rcartocolor Earth")
+
+ggplot(melted_cormat, aes(x = Var1, y = Var2, fill = value)) + 
+  geom_tile(color = "white") +
+  scale_fill_continuous_diverging(
+    name = "correlation",
+    limits = c(-1, 1),
+    breaks = c(-.5, 0, .5),
+    labels = c("–0.5", "0.0", "0.5"),
+    palette = "Blue-Red",
+    rev = TRUE,
+    na.value = "white") +
+  theme_void() +
+  scale_x_discrete(position = "top") +
+  theme(axis.text.x = element_text(),
+        axis.text.y = element_text(hjust = 1),
+        legend.position = "inside",
+        legend.direction = "horizontal",
+        legend.title.position = "top",
+        legend.title = element_text(hjust = .5),
+        legend.position.inside = c(.75,.25)) +
+  coord_fixed() +
+  ggtitle("Good amount of whitespace, colorspace Blue-Red")
+```
+
+## Highlighting scales
+
+You don't want a scale meant to highlight a particular category to be too complex or overwhelming, because you want it the highlighted data to stand out. Gray and color, on the left, works well because it is not distracting.
+
+```{r}
+#| echo: false
+#| message: false 
+#| warning: false
+#| layout-ncol: 2
+
+library(fivethirtyeight)
+library(tidyr)
+highlight_scale <- function(categories, highlight, highlight_color) {
+  non_highlight <- "#A8A8A8"
+  l <- list()
+  for (cat in categories) {
+    l[cat] <- ifelse(cat == highlight, highlight_color, non_highlight)
+  }
+  l
+}
+crg <- college_recent_grads %>% 
+  select(sharewomen, median, major, major_category) %>% drop_na() %>% 
+  filter(major_category %in% c("Biology & Life Science", "Engineering", "Health", 
+                               "Physical Sciences", "Computers & Mathematics")) 
+
+s <- highlight_scale(crg$major_category, "Health", "#008Fd5")
+
+factor_levels <- c("Health", unique(crg$major_category)[unique(crg$major_category) != "Health"])
+
+crg <- crg %>%
+  mutate(major_category = factor(major_category, levels = factor_levels))
+
+p <- ggplot(crg, aes(x = sharewomen, y = median, color = major_category, 
+                     alpha = major_category)) +
+  geom_point(size = 3) +
+  theme_classic() +
+  scale_y_continuous("median salary", labels = scales::dollar_format()) + 
+  scale_x_continuous("% women", labels = scales::percent_format()) +
+  scale_alpha_manual(name = "Major Category", values = c(1, rep(.7, 4))) +
+  theme(legend.position = "inside",
+        legend.position.inside = c(.8, .75))
+
+p +
+  scale_color_manual(name = "Major Category", values = s)
+
+accent_Brewer <- RColorBrewer::brewer.pal(7, name = "Accent")[c(7, 1:4)]
+
+colors <- darken(accent_Brewer, .2)
+fills <- c(accent_Brewer[1], alpha(accent_Brewer[2:5], .7))
+
+p + 
+  scale_color_manual("Major Category", values = colors, guide = "legend") +
+  scale_fill_manual(values = fills) 
+```
+
+# Application in R
+
+There are variety of color scale functions in R. It can get pretty messy, since there are countless functions:
+
+| Function                  | Aesthetic | Data type  | Palette type |
+|---------------------------|-----------|------------|--------------|
+| `scale_color_hue()`       | `color`   | discrete   | qualitative  |
+| `scale_fill_hue()`        | `fill`    | discrete   | qualitative  |
+| `scale_color_gradient()`  | `color`   | continuous | sequential   |
+| `scale_color_gradient2()` | `color`   | continuous | diverging    |
+| ...                       | ...       | ...        | ...          |
+
+## Colorspace
+The `colorspace` package creates some order with scale naming conventions `scale_<aesthetic>_<datatype>_<colorscale>()`, which contains:
+
+-   `<aesthetic>`: the name of the aesthetic (`fill`, `color`, `colour`)
+
+-   `<datatype>`: type of variable plotted (`discrete`, `continuous`, `binned`)
+
+-   `<colorscale>`: type of color scale (`qualitative`, `sequential`, `diverging`, `divergingx`)
+
+Which makes functions more clear, such as `scale_color_discrete_qualitative()`. 
+
+For example, these do the same thing:
+```{r}
+#| fig-height: 3
+#| layout-ncol: 2
+library(colorspace)
+p <- ggplot(temps_months, aes(x = month, y = location, fill = mean)) +
+  geom_tile(width = 0.95, height = 0.95) +
+  coord_fixed(expand = FALSE) + 
+  theme_classic()
+
+p +
+  scale_fill_distiller(palette = "YlGnBu")
+
+p + 
+  scale_fill_continuous_sequential(palette = "YlGnBu", rev = F)
+```
+
+## Other Settings
+You can also set `breaks`, `labels`, and other specifications for the scale:
+```{r}
+#| fig-height: 3
+p + 
+  scale_fill_viridis_c(
+    name = "temperature",
+    breaks = c(25, 50, 75, 100),
+    labels = c("25°F", "50°F", "75°F", "100°F")
+  )
+```
+
+
+## Common qualitative palettes
+
+### Best Practice: Set Colors Manually
+
+Discrete, qualitative scales are often best set manually. 
+```{r}
+ggplot(temperatures, aes(day_of_year, temperature, color = location)) +
+  geom_line(linewidth = 1)
+```
+
+A good option is the `ggthemes` `scale_color_colorblind()`, but there are some issues, such as the black standing out almost like a highlight, and the blue and green looking relatively similar. 
+```{r}
+library(ggthemes)
+ggplot(temperatures, aes(day_of_year, temperature, color = location)) +
+  geom_line(linewidth = 1) +
+  scale_color_colorblind()
+```
+
+Instead, assigning colors manually is preferable to have full control: 
+```{r}
+library(ggthemes)
+ggplot(temperatures, aes(day_of_year, temperature, color = location)) +
+  geom_line(linewidth = 1) +
+  scale_color_manual(values = c('Death Valley' = "#E69F00", 
+                                'Houston' = "#56B4E9",
+                                'San Diego' = "#009E73",
+                                'Chicago' = "#F0E442"))
+```
+
+You can access hex codes of palettes using functions like `*_pal()` for `ggthemes`, `brewer.pal`, and `paletteer_d`/`paletteer_c` for a [full list of color palettes in R](https://r-charts.com/color-palettes/) using the `paletteer` package. 
+
+### Okabe-Ito Scale
+This color scale is good for all color-vision deficiencies and is therefore a great option for qualitative coloring:
+```{r}
+#| fig-height: .5
+#| fig-width: 8
+#| echo: false
+pal <- data.frame("col" = colorblind_pal()(8), i = 1:8, 
+                  color = c("white", rep("black", 7)))
+
+palette_builder <- function(p) {
+  l <- list()
+  for (i in 1:length(p)) {
+    l[p[i]] <- p[i]
+  }
+  l
+}
+
+scale <- palette_builder(pal$col)
+labels <- palette_builder(pal$color)
+ggplot(pal, aes(x = i, y = 1, fill = col)) + 
+  geom_tile() + 
+  geom_text(aes(x = i, label = col, color = color)) + 
+  scale_y_continuous(limits = c(.5, 1.5), expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0)) +
+  theme(
+    legend.position = "none",
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    plot.margin = margin(0,0,0,0),
+    axis.ticks.length = unit(0, "pt")) +
+  scale_fill_manual(values = scale) +
+  scale_colour_manual(values=labels)
+```
+
+### Other Palettes 
+The `RColorBrewer` package has good qualitative palettes. Use functions `scale_fill_brewer(palette = "Set1")` and `scale_color_brewer(palette = "Set1")`.
+
+```{r}
+#| echo: false
+library(tidyr)
+pals <- c('Accent', 'Dark2', 'Paired', 'Pastel1', 'Pastel2', 'Set1', 'Set2', 'Set3')
+
+l <- list()
+for (pal in pals) {
+  l[[pal]] <- brewer.pal(7, pal)
+}
+
+palettes <- data.frame(l) %>% pivot_longer(cols = everything()) %>% 
+  group_by(name) %>% mutate(n = 1:7)
+
+ggplot(palettes, aes(y = factor(name), x = n, fill = value)) + 
+  geom_rect(width = 1, height = .5) + 
+  scale_fill_manual(values = palette_builder(palettes$value), guide = "none") +
+  scale_x_continuous(expand = c(.001,.1)) +
+  theme_void() + 
+  theme(axis.text.y = element_text(hjust = 1))
+```
+
+Here, we can see that United operates most flights at EWR, and that delays tend to be longer later in the day. Darker palettes are better, but all qualitative brewer palettes are: `Accent`, `Dark2`, `Paired`, `Pastel1`, `Pastel2`, `Set1`, `Set2`, `Set3`.
+
+```{r}
+#| message: false
+#| layout-ncol: 2
+library(RColorBrewer)
+library(tidyverse)
+library(nycflights13)
+
+set.seed(123)
+nyc <- flights %>% 
+  filter(carrier %in% c("AA", "DL", "UA", "WN", "B6", "F9"), origin == "EWR", 
+         month == sample(1:12, 1), day == sample(unique(day), 1)) %>% tidyr::drop_na()
+
+p <- ggplot(nyc, aes(x = dep_time, y = dep_delay, color = carrier)) + 
+  geom_point(alpha = .7) + 
+  theme_classic() +
+  scale_y_continuous(limits = c(-20, 150), expand = c(0, 0))
+
+p +
+  ggtitle("palette = Set1")  + 
+  scale_color_brewer(palette = "Set1")
+
+p +
+  ggtitle("palette = Dark2")  + 
+  scale_color_brewer(palette = "Dark2")
+```
+
+`ggsci` has good palettes that are used in scientific journals, platforms such as D3.js, and others inspired by movies. See the rest of the palettes [here](https://nanx.me/ggsci/articles/ggsci.html).
+
+```{r}
+#| echo: false
+library(paletteer)
+pals <- c('nrc_npg', 'default_aaas', 'default_jco', 'default_uchicago', 
+          'default_nejm', 'default_jama', 'legacy_tron', 'category10_d3')
+
+funcs <- c('scale_*_npg', 'scale_*_aaas', 'scale_*_jco', 'scale_*_uchicago', 
+           'scale_*_nejm', 'scale_*_jama', 'scale_*_tron', 'scale_*_d3')
+
+l <- list()
+labels <- list()
+for (i in 1:length(pals)) {
+  pal <- pals[i]
+  l[[pal]] <- paletteer_d(paste0("ggsci::", pal), n = 7)
+  labels[[pal]] <- funcs[i]
+}
+
+palettes <- data.frame(l) %>% pivot_longer(cols = everything()) %>% 
+  group_by(name) %>% mutate(n = 1:7)
+
+ggplot(palettes, aes(y = factor(name), x = n, fill = value)) + 
+  geom_rect(width = 1, height = .5) + 
+  scale_fill_manual(values = palette_builder(palettes$value), guide = "none") +
+  scale_x_continuous(expand = c(.001,.1)) +
+  theme_void() + 
+  theme(axis.text.y = element_text(hjust = 1)) + 
+  scale_y_discrete(labels = labels)
+```
+
+```{r}
+#| message: false
+#| layout-ncol: 2
+library(ggsci)
+admits <- data.frame(UCBAdmissions)
+
+p <- ggplot(admits, aes(x = Admit, y = Freq, fill = Dept)) +
+  geom_col(position = "dodge") 
+
+p + 
+  scale_fill_uchicago() + 
+  ggtitle("scale_fill_uchicago")
+
+p + 
+  scale_fill_d3() + 
+  ggtitle("scale_fill_d3")
+```
+
+Finally, `ggthemes` has some themes based on different data visualization softwares and publications.
+
+```{r}
+#| echo: false
+#| warning: false
+library(paletteer)
+library(ggthemes)
+pals <- c('gdoc', 'fivethirtyeight', 'Tableau_10', 'few_Medium', 
+          'excel_Office_Theme', 'stata_economist', 'calc', 'colorblind', 
+          'stata_s2color', 'wsj_colors6')
+
+funcs <- c('scale_*_gdocs', 'scale_*_fivethirtyeight', 'scale_*_tableau', 
+           'scale_*_few', 'scale_*_excel_new', 'scale_*_economist', 
+           'scale_*_calc', 'scale_*_colorblind', 'scale_*_stata', 'scale_*_wsj')
+
+l <- list()
+labels <- list()
+for (i in 1:length(pals)) {
+  pal <- pals[i]
+  l[[pal]] <- paletteer_d(paste0("ggthemes::", pal), n = 5)
+  labels[[pal]] <- funcs[i]
+}
+
+palettes <- data.frame(l) %>% 
+  pivot_longer(cols = everything()) %>% 
+  group_by(name) %>% 
+  mutate(n = 1:5)
+
+ggplot(palettes, aes(y = factor(name), x = n, fill = value)) + 
+  geom_rect(width = 1, height = .5) + 
+  scale_fill_manual(values = palette_builder(palettes$value), guide = "none") +
+  scale_x_continuous(expand = c(.001,.1)) +
+  theme_void() + 
+  theme(axis.text.y = element_text(hjust = 1)) + 
+  scale_y_discrete(labels = labels)
+```
+
+```{r}
+#| layout-ncol: 2
+library(ggthemes)
+p + 
+  scale_fill_wsj() + 
+  ggtitle("scale_fill_wsj")
+
+p + 
+  scale_fill_tableau() + 
+  ggtitle("scale_fill_tableau")
+```
+
+These are all of the discrete palettes available through `colorspace`:
+```{r}
+#| echo: false
+colorspace::hcl_palettes(type = "Qualitative", plot = TRUE)
+```
+
+## Common sequential palettes
+
+`viridis` is a great package for sequential palettes:
+
+```{r}
+#| echo: false
+#| warning: false
+library(paletteer)
+library(viridis)
+library(grid)
+pals <- c('viridis', 'inferno', 'magma', 'plasma', 
+          'cividis', "rocket", "mako", "turbo")
+
+labels <- paste(pals, c("(D)", "(B)", "(A)", "(C)", "(E)", "(F)", "(G)", "(H)"))
+
+l <- list()
+grads <- list()
+
+for (i in 1:length(pals)) {
+  pal <- pals[i]
+  l[[pal]] <- paletteer_c(paste0("viridis::", pal), n = 30)
+  grads[[pal]] <- linearGradient(paletteer_c(paste0("viridis::", pal), n = 30))
+}
+
+palettes <- data.frame(l) %>% pivot_longer(cols = everything())
+
+ggplot(palettes, aes(y = factor(name), height = .5, x = 1, width = 1, 
+                     fill = factor(name))) + 
+  geom_rect() + 
+  scale_fill_manual(values = grads, guide = "none") + 
+  theme_void() +
+  scale_x_continuous(expand = c(.001, .001)) +
+  theme(axis.text.y = element_text(hjust = 1)) + 
+  scale_y_discrete(labels = labels)
+```
+
+```{r}
+#| fig-height: 3
+#| layout-ncol: 2
+p <- ggplot(temps_months, aes(x = month, y = location, fill = mean)) +
+  geom_tile(width = 0.95, height = 0.95) +
+  coord_fixed(expand = FALSE) + 
+  theme_classic() 
+p +
+  scale_fill_viridis_c() +
+  ggtitle("option = 'viridis'")
+
+p + 
+  scale_fill_viridis_c(option = "inferno", 
+                       begin = .15) + # begin allows you to cut off some of the palette
+  ggtitle("option = 'inferno'")
+```
+
+Distiller palettes, which take RColorBrewer scales and make them continuous, are another good option for sequential scales:
+
+```{r}
+#| echo: false
+#| warning: false
+pals <- c('Blues', 'BuGn', 'BuPu', 'GnBu', 'Greens', 'Greys', 
+          'Oranges', 'OrRd', 'PuBu', 'PuBuGn', 'PuRd', 'Purples', 
+          'RdPu', 'Reds', 'YlGn', 'YlGnBu', 'YlOrBr', 'YlOrRd')
+
+pkgs <- rep("RColorBrewer", times = length(pals))
+
+l <- list()
+grads <- list()
+
+for (i in 1:length(pals)) {
+  p <- pals[i]
+  l[[p]] <- paletteer_d(paste0(pkgs[i], "::", pals[i]), n = 9)
+  grads[[p]] <- linearGradient(l[[p]])
+}
+
+palettes <- data.frame(l) %>% pivot_longer(cols = everything())
+
+ggplot(palettes, aes(y = factor(name), height = .5, x = 1, width = 1, 
+                     fill = factor(name))) + 
+  geom_rect() + 
+  scale_fill_manual(values = grads, guide = "none") + 
+  theme_void() +
+  scale_x_continuous(expand = c(.001, .001)) +
+  theme(axis.text.y = element_text(hjust = 1))
+```
+
+```{r}
+#| fig-height: 3
+#| layout-ncol: 2
+p +
+  scale_fill_distiller(palette = "YlGnBu") +
+  ggtitle("palette = 'YlGnBu'")
+
+p + 
+  scale_fill_distiller(palette = "YlOrRd", direction = 1) +
+  ggtitle("palette = 'YlOrRd', direction = 1")
+```
+
+These are all of the sequential palettes available through `colorspace`:
+```{r}
+#| echo: false
+#| fig-width: 10
+colorspace::hcl_palettes(type = "sequential", plot = TRUE)
+```
+
+## Common diverging palettes
+
+All colorspace diverging palettes:
+```{r}
+#| echo: false
+colorspace::hcl_palettes(type = "diverging", plot = TRUE, n = 9)
+colorspace::divergingx_palettes(plot = TRUE, n = 9)
+```
+
+```{r}
+#| warning: false
+#| fig-align: 'center'
+#| fig-width: 8
+#| fig-height: 5
+library(fivethirtyeight)
+library(sf)
+
+states <- read_sf("tl_2025_us_state") %>% 
+  filter(!NAME %in% c("Hawaii", "American Samoa", "United States Virgin Islands", 
+                      "District of Columbia", "Puerto Rico", 
+                      "Commonwealth of the Northern Mariana Islands", "Guam", 
+                      "Alaska")) %>% 
+  left_join(partisan_lean_state, by = c("NAME" = "state")) %>% 
+  mutate(lean = ifelse(pvi_party == "D", pvi_amount * -1, pvi_amount))
+
+ggplot(data = states, aes(fill = lean)) +
+  geom_sf() +
+  scale_fill_continuous_diverging(
+    name = "Cook Partisan Voting Index",
+    palette = "Blue-Red",
+    rev = F,
+    na.value = "white", 
+    limits = c(-50, 50),
+    breaks = c(-50, 50),
+    labels = c("Lean Democrat", "Lean Republican"),
+    # p1 adjusts how chroma should vary, makes chroma increase 
+    # quickly near the midpoint (more concave)
+    p1 = .6) +
+  theme_map() +
+  # making the legend look nicer
+  theme(legend.position = "inside",
+        legend.position.inside = c(.05, .05),
+        legend.direction = "horizontal",
+        legend.title.position = "top", 
+        legend.title = element_text(hjust = .5)) +
+  coord_sf(xlim = c(-130, -65), ylim = c(25, 50))
+```

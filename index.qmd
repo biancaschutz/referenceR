@@ -44,6 +44,6 @@ How do I...
 -   [Change the colors, line type, and other aesthetics?](#aes)
 -   [Add labels?](ggplot2.qmd#labels)
 -   [Change the theme?](ggplot2.qmd#themes)
--   [Change the color scheme?](ggplot2.qmd#pal)
+-   [Decide what colors to use?](color.qmd)
 -   [Deal with overlapping x-axis labels?](ggplot2.qmd#xaxis)
 -   [Adjust the range/scale of my axes?](ggplot2.qmd#range)

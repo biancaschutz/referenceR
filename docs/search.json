@@ -396,7 +396,7 @@
     "href": "ggplot2.html#img",
     "title": "ggplot2",
     "section": "Image",
-    "text": "Image\n\nlibrary(ggimage)\nadmissions &lt;- read.csv(\"https://raw.githubusercontent.com/biancaschutz/rguides/refs/heads/main/ggimage_example/admissions.csv\") %&gt;%\n  mutate(img = str_c(\"ggimage_example\", \n                     str_sub(img, start = 2)))\n\nggplot(admissions, aes(x = Rank_2019, y = Average_SAT, image = img)) + \n  geom_image(size = .25)"
+    "text": "Image\n\nlibrary(ggimage)\nadmissions &lt;- read.csv(\"https://raw.githubusercontent.com/biancaschutz/referenceR/refs/heads/main/ggimage_example/admissions.csv\") %&gt;%\n  mutate(img = str_c(\"ggimage_example\", \n                     str_sub(img, start = 2)))\n\nggplot(admissions, aes(x = Rank_2019, y = Average_SAT, image = img)) + \n  geom_image(size = .25)"
   },
   {
     "objectID": "ggplot2.html#labels",
@@ -417,7 +417,7 @@
     "href": "ggplot2.html#pal",
     "title": "ggplot2",
     "section": "Color Palettes",
-    "text": "Color Palettes\n\nCustom Colors\nR has hundreds of named colors which can be accessed with colors() and you can also use any hex code like #FF0000. See this cheat sheet for more information about choosing colors.\n\ns &lt;- ggplot(mtcars, aes(x = wt, y = mpg, color = factor(am, levels = c(0, 1), labels = c(\"Automatic\", \"Manual\")))) + \n  geom_point() + \n  labs(x = \"Weight\", y = \"Miles Per Gallon\", color = \"Transmission\")\n\ns + scale_color_manual(values = list('Automatic' = \"red\", \n                                     'Manual' = \"blue\"))\n\n\n\n\n\n\n\nb2 + scale_fill_manual(values = list('Automatic' = \"red\", \n                                     'Manual' = \"blue\"))\n\n\n\n\n\n\n\n\n\n\nBase R Palettes\nOptions include rainbow(n), heat.colors(n), terrain.colors(n), topo.colors(n), and cm.colors(n)\n\nb2 + scale_fill_manual(values = rainbow(n = 2))\n\n\n\n\n\n\n\n\n\n\nRColorBrewer\nSee the website for a list of all palettes. There are diverging palettes (good for ordinal color scales that range from negative to positive), sequential (for ordinal color scales), and qualitative (for data that is unordered).\n\nlibrary(nycflights13)\nggplot(mtcars, aes(x = wt, y = mpg, color = as.factor(cyl))) + \n  geom_point() + \n  scale_color_brewer(palette = \"RdPu\") + # sequential\n  labs(x = \"Weight\", y = \"Miles Per Gallon\", color = \"Cylinders\")\n\n\n\n\n\n\n\nflights_monthly &lt;- flights %&gt;% \n  drop_na() %&gt;%\n  filter(year == 2013) %&gt;%\n  mutate(delay_level = case_when(dep_delay &gt; 10 ~ \"Delay\",\n                                  between(dep_delay, -10, 10) ~ \"On Time\", \n                                  dep_delay &lt; -10 ~ \"Early\", \n                                  .default = NA)) %&gt;%\n  group_by(month, delay_level) %&gt;%\n  count()\n  \nggplot(flights_monthly, aes(x = as.factor(month), y = n, fill = factor(delay_level, levels = c(\"Delay\", \"On Time\", \"Early\")))) + \n  geom_col(position = \"fill\") + \n  scale_fill_brewer(palette = \"RdYlGn\") + \n  labs(fill = \"Type\", y = \"% of flights\", x = \"month\")\n\n\n\n\n\n\n\nb2 + scale_fill_brewer(palette = \"Dark2\") # qualitative\n\n\n\n\n\n\n\n\n\n\nViridis\nViridis has various palettes, that are especially useful for maps. See the documentation here.\n\nggplot(mtcars, aes(wt, mpg, color = factor(cyl))) + \n  geom_point() +\n  viridis::scale_color_viridis(discrete=TRUE)\n\n\n\n\n\n\n\n\n\n\nOther\nggthemes has some nice palettes:\n\nlibrary(scales)\nshow_col(tableau_color_pal('Tableau 20')(6))\n\n\n\n\n\n\n\nggplot(as.data.frame(Titanic), aes(x = Survived, y = Freq, fill = Class)) +\n  geom_col(position = \"dodge\") +\n  ggthemes::scale_fill_wsj()\n\n\n\n\n\n\n\n\nIf you’re a Wes Anderson fan, there’s a package for you:\n\nggplot(as.data.frame(Titanic), aes(x = Survived, y = Freq, fill = Class)) +\n  geom_col(position = \"dodge\") +\n  scale_fill_manual(values = \n                      wesanderson::wes_palette(\"AsteroidCity1\"))\n\n\n\n\n\n\n\n\nYou also might find a palette from your favorite tv show:\n\nggplot(as.data.frame(Titanic), aes(x = Survived, y = Freq, fill = Class)) +\n  geom_col(position = \"dodge\") +\n  tvthemes::scale_fill_simpsons()\n\n\n\n\n\n\n\n\nIf you need a color palette from a scientific journal, R has those too:\n\nggplot(as.data.frame(Titanic), aes(x = Survived, y = Freq, fill = Class)) +\n  geom_col(position = \"dodge\") +\n  ggsci::scale_fill_npg()"
+    "text": "Color Palettes\n\nCustom Colors\nR has hundreds of named colors which can be accessed with colors() and you can also use any hex code like #FF0000. See this cheat sheet for more information about choosing colors, or this guide I wrote based on lectures from my UT data visualization class.\n\ns &lt;- ggplot(mtcars, aes(x = wt, y = mpg, color = factor(am, levels = c(0, 1), labels = c(\"Automatic\", \"Manual\")))) + \n  geom_point() + \n  labs(x = \"Weight\", y = \"Miles Per Gallon\", color = \"Transmission\")\n\ns + scale_color_manual(values = list('Automatic' = \"red\", \n                                     'Manual' = \"blue\"))\n\n\n\n\n\n\n\nb2 + scale_fill_manual(values = list('Automatic' = \"red\", \n                                     'Manual' = \"blue\"))\n\n\n\n\n\n\n\n\n\n\nBase R Palettes\nOptions include rainbow(n), heat.colors(n), terrain.colors(n), topo.colors(n), and cm.colors(n)\n\nb2 + scale_fill_manual(values = rainbow(n = 2))\n\n\n\n\n\n\n\n\n\n\nRColorBrewer\nSee the website for a list of all palettes. There are diverging palettes (good for ordinal color scales that range from negative to positive), sequential (for ordinal color scales), and qualitative (for data that is unordered).\n\nlibrary(nycflights13)\nggplot(mtcars, aes(x = wt, y = mpg, color = as.factor(cyl))) + \n  geom_point() + \n  scale_color_brewer(palette = \"RdPu\") + # sequential\n  labs(x = \"Weight\", y = \"Miles Per Gallon\", color = \"Cylinders\")\n\n\n\n\n\n\n\nflights_monthly &lt;- flights %&gt;% \n  drop_na() %&gt;%\n  filter(year == 2013) %&gt;%\n  mutate(delay_level = case_when(dep_delay &gt; 10 ~ \"Delay\",\n                                  between(dep_delay, -10, 10) ~ \"On Time\", \n                                  dep_delay &lt; -10 ~ \"Early\", \n                                  .default = NA)) %&gt;%\n  group_by(month, delay_level) %&gt;%\n  count()\n  \nggplot(flights_monthly, aes(x = as.factor(month), y = n, fill = factor(delay_level, levels = c(\"Delay\", \"On Time\", \"Early\")))) + \n  geom_col(position = \"fill\") + \n  scale_fill_brewer(palette = \"RdYlGn\") + \n  labs(fill = \"Type\", y = \"% of flights\", x = \"month\")\n\n\n\n\n\n\n\nb2 + scale_fill_brewer(palette = \"Dark2\") # qualitative\n\n\n\n\n\n\n\n\n\n\nViridis\nViridis has various palettes, that are especially useful for maps. See the documentation here.\n\nggplot(mtcars, aes(wt, mpg, color = factor(cyl))) + \n  geom_point() +\n  viridis::scale_color_viridis(discrete=TRUE)\n\n\n\n\n\n\n\n\n\n\nOther\nggthemes has some nice palettes:\n\nlibrary(scales)\nshow_col(tableau_color_pal('Tableau 20')(6))\n\n\n\n\n\n\n\nggplot(as.data.frame(Titanic), aes(x = Survived, y = Freq, fill = Class)) +\n  geom_col(position = \"dodge\") +\n  ggthemes::scale_fill_wsj()\n\n\n\n\n\n\n\n\nIf you’re a Wes Anderson fan, there’s a package for you:\n\nggplot(as.data.frame(Titanic), aes(x = Survived, y = Freq, fill = Class)) +\n  geom_col(position = \"dodge\") +\n  scale_fill_manual(values = \n                      wesanderson::wes_palette(\"AsteroidCity1\"))\n\n\n\n\n\n\n\n\nYou also might find a palette from your favorite tv show:\n\nggplot(as.data.frame(Titanic), aes(x = Survived, y = Freq, fill = Class)) +\n  geom_col(position = \"dodge\") +\n  tvthemes::scale_fill_simpsons()\n\n\n\n\n\n\n\n\nIf you need a color palette from a scientific journal, R has those too:\n\nggplot(as.data.frame(Titanic), aes(x = Survived, y = Freq, fill = Class)) +\n  geom_col(position = \"dodge\") +\n  ggsci::scale_fill_npg()"
   },
   {
     "objectID": "ggplot2.html#range",
@@ -459,7 +459,7 @@
     "href": "index.html#ggplot2",
     "title": "Index",
     "section": "ggplot2",
-    "text": "ggplot2\nHow do I…\n\nVisualize one discrete variable? (ex. bar chart)\nVisualize one continuous variable? (ex. histogram)\nVisualize two continuous variables? (ex. scatterplot)\nVisualize one discrete, and one continuous variable? (ex. bar chart)\nVisualize two discrete variables? (ex. jitters)\nMake a map?\nChange the colors, line type, and other aesthetics?\nAdd labels?\nChange the theme?\nChange the color scheme?\nDeal with overlapping x-axis labels?\nAdjust the range/scale of my axes?"
+    "text": "ggplot2\nHow do I…\n\nVisualize one discrete variable? (ex. bar chart)\nVisualize one continuous variable? (ex. histogram)\nVisualize two continuous variables? (ex. scatterplot)\nVisualize one discrete, and one continuous variable? (ex. bar chart)\nVisualize two discrete variables? (ex. jitters)\nMake a map?\nChange the colors, line type, and other aesthetics?\nAdd labels?\nChange the theme?\nDecide what colors to use?\nDeal with overlapping x-axis labels?\nAdjust the range/scale of my axes?"
   },
   {
     "objectID": "about.html",
@@ -467,5 +467,75 @@
     "title": "About",
     "section": "",
     "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "color.html",
+    "href": "color.html",
+    "title": "Colors",
+    "section": "",
+    "text": "Distinguish categories (qualitative)\n\n\n\n\n\n\n\n\n\n\n\nRepresent numeric values (sequential)\n\n\n\n\n\n\n\n\n\n\n\nRepresent numeric values (diverging)\n\n\n\n\n\n\n\n\n\n\n\nHighlight\n\n\n\n\n\n\n\n\n\n\nUsing color is good for differentiating between groups, but if you need exact values for numeric or continuous data, color cannot provide that level of detail.\n\n\nSet1 is likely the better choice with small dots, where stronger or darker colors are more useful.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nSome color scales might be more intuitive, such as the inferno scale with temperatures.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nWith different color palettes, the area in the middle tends to have lighter colors, but the range that is lightly colored varies between palettes. On the left, we see a larger range, whereas in the centerght, it’s a smaller range. A larger range might not show enough detail with values in the middle, while a smaller range makes it difficult to read. The final color scale on the right is a good in-between.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nYou don’t want a scale meant to highlight a particular category to be too complex or overwhelming, because you want it the highlighted data to stand out. Gray and color, on the left, works well because it is not distracting."
+  },
+  {
+    "objectID": "color.html#qualitative-scales",
+    "href": "color.html#qualitative-scales",
+    "title": "Colors",
+    "section": "",
+    "text": "Set1 is likely the better choice with small dots, where stronger or darker colors are more useful."
+  },
+  {
+    "objectID": "color.html#sequential-scales",
+    "href": "color.html#sequential-scales",
+    "title": "Colors",
+    "section": "",
+    "text": "Some color scales might be more intuitive, such as the inferno scale with temperatures."
+  },
+  {
+    "objectID": "color.html#diverging-scales",
+    "href": "color.html#diverging-scales",
+    "title": "Colors",
+    "section": "",
+    "text": "With different color palettes, the area in the middle tends to have lighter colors, but the range that is lightly colored varies between palettes. On the left, we see a larger range, whereas in the centerght, it’s a smaller range. A larger range might not show enough detail with values in the middle, while a smaller range makes it difficult to read. The final color scale on the right is a good in-between."
+  },
+  {
+    "objectID": "color.html#highlighting-scales",
+    "href": "color.html#highlighting-scales",
+    "title": "Colors",
+    "section": "",
+    "text": "You don’t want a scale meant to highlight a particular category to be too complex or overwhelming, because you want it the highlighted data to stand out. Gray and color, on the left, works well because it is not distracting."
+  },
+  {
+    "objectID": "color.html#colorspace",
+    "href": "color.html#colorspace",
+    "title": "Colors",
+    "section": "Colorspace",
+    "text": "Colorspace\nThe colorspace package creates some order with scale naming conventions scale_&lt;aesthetic&gt;_&lt;datatype&gt;_&lt;colorscale&gt;(), which contains:\n\n&lt;aesthetic&gt;: the name of the aesthetic (fill, color, colour)\n&lt;datatype&gt;: type of variable plotted (discrete, continuous, binned)\n&lt;colorscale&gt;: type of color scale (qualitative, sequential, diverging, divergingx)\n\nWhich makes functions more clear, such as scale_color_discrete_qualitative().\nFor example, these do the same thing:\nlibrary(colorspace)\np &lt;- ggplot(temps_months, aes(x = month, y = location, fill = mean)) +\n  geom_tile(width = 0.95, height = 0.95) +\n  coord_fixed(expand = FALSE) + \n  theme_classic()\n\np +\n  scale_fill_distiller(palette = \"YlGnBu\")\np + \n  scale_fill_continuous_sequential(palette = \"YlGnBu\", rev = F)"
+  },
+  {
+    "objectID": "color.html#other-settings",
+    "href": "color.html#other-settings",
+    "title": "Colors",
+    "section": "Other Settings",
+    "text": "Other Settings\nYou can also set breaks, labels, and other specifications for the scale:\n\np + \n  scale_fill_viridis_c(\n    name = \"temperature\",\n    breaks = c(25, 50, 75, 100),\n    labels = c(\"25°F\", \"50°F\", \"75°F\", \"100°F\")\n  )"
+  },
+  {
+    "objectID": "color.html#common-qualitative-palettes",
+    "href": "color.html#common-qualitative-palettes",
+    "title": "Colors",
+    "section": "Common qualitative palettes",
+    "text": "Common qualitative palettes\n\nBest Practice: Set Colors Manually\nDiscrete, qualitative scales are often best set manually.\n\nggplot(temperatures, aes(day_of_year, temperature, color = location)) +\n  geom_line(linewidth = 1)\n\n\n\n\n\n\n\n\nA good option is the ggthemes scale_color_colorblind(), but there are some issues, such as the black standing out almost like a highlight, and the blue and green looking relatively similar.\n\nlibrary(ggthemes)\n\nWarning: package 'ggthemes' was built under R version 4.4.3\n\nggplot(temperatures, aes(day_of_year, temperature, color = location)) +\n  geom_line(linewidth = 1) +\n  scale_color_colorblind()\n\n\n\n\n\n\n\n\nInstead, assigning colors manually is preferable to have full control:\n\nlibrary(ggthemes)\nggplot(temperatures, aes(day_of_year, temperature, color = location)) +\n  geom_line(linewidth = 1) +\n  scale_color_manual(values = c('Death Valley' = \"#E69F00\", \n                                'Houston' = \"#56B4E9\",\n                                'San Diego' = \"#009E73\",\n                                'Chicago' = \"#F0E442\"))\n\n\n\n\n\n\n\n\nYou can access hex codes of palettes using functions like *_pal() for ggthemes, brewer.pal, and paletteer_d/paletteer_c for a full list of color palettes in R using the paletteer package.\n\n\nOkabe-Ito Scale\nThis color scale is good for all color-vision deficiencies and is therefore a great option for qualitative coloring:\n\n\n\n\n\n\n\n\n\n\n\nOther Palettes\nThe RColorBrewer package has good qualitative palettes. Use functions scale_fill_brewer(palette = \"Set1\") and scale_color_brewer(palette = \"Set1\").\n\n\n\n\n\n\n\n\n\nHere, we can see that United operates most flights at EWR, and that delays tend to be longer later in the day. Darker palettes are better, but all qualitative brewer palettes are: Accent, Dark2, Paired, Pastel1, Pastel2, Set1, Set2, Set3.\nlibrary(RColorBrewer)\nlibrary(tidyverse)\nlibrary(nycflights13)\n\nset.seed(123)\nnyc &lt;- flights %&gt;% \n  filter(carrier %in% c(\"AA\", \"DL\", \"UA\", \"WN\", \"B6\", \"F9\"), origin == \"EWR\", \n         month == sample(1:12, 1), day == sample(unique(day), 1)) %&gt;% tidyr::drop_na()\n\np &lt;- ggplot(nyc, aes(x = dep_time, y = dep_delay, color = carrier)) + \n  geom_point(alpha = .7) + \n  theme_classic() +\n  scale_y_continuous(limits = c(-20, 150), expand = c(0, 0))\n\np +\n  ggtitle(\"palette = Set1\")  + \n  scale_color_brewer(palette = \"Set1\")\np +\n  ggtitle(\"palette = Dark2\")  + \n  scale_color_brewer(palette = \"Dark2\")\n\n\n\n\n\n\n\n\n\n\nggsci has good palettes that are used in scientific journals, platforms such as D3.js, and others inspired by movies. See the rest of the palettes here.\n\n\n\n\n\n\n\n\n\nlibrary(ggsci)\nadmits &lt;- data.frame(UCBAdmissions)\n\np &lt;- ggplot(admits, aes(x = Admit, y = Freq, fill = Dept)) +\n  geom_col(position = \"dodge\") \n\np + \n  scale_fill_uchicago() + \n  ggtitle(\"scale_fill_uchicago\")\np + \n  scale_fill_d3() + \n  ggtitle(\"scale_fill_d3\")\n\n\n\n\n\n\n\n\n\n\nFinally, ggthemes has some themes based on different data visualization softwares and publications.\n\n\n\n\n\n\n\n\n\nlibrary(ggthemes)\np + \n  scale_fill_wsj() + \n  ggtitle(\"scale_fill_wsj\")\np + \n  scale_fill_tableau() + \n  ggtitle(\"scale_fill_tableau\")\n\n\n\n\n\n\n\n\n\n\nThese are all of the discrete palettes available through colorspace:"
+  },
+  {
+    "objectID": "color.html#common-sequential-palettes",
+    "href": "color.html#common-sequential-palettes",
+    "title": "Colors",
+    "section": "Common sequential palettes",
+    "text": "Common sequential palettes\nviridis is a great package for sequential palettes:\n\n\n\n\n\n\n\n\n\np &lt;- ggplot(temps_months, aes(x = month, y = location, fill = mean)) +\n  geom_tile(width = 0.95, height = 0.95) +\n  coord_fixed(expand = FALSE) + \n  theme_classic() \np +\n  scale_fill_viridis_c() +\n  ggtitle(\"option = 'viridis'\")\np + \n  scale_fill_viridis_c(option = \"inferno\", \n                       begin = .15) + # begin allows you to cut off some of the palette\n  ggtitle(\"option = 'inferno'\")\n\n\n\n\n\n\n\n\n\n\nDistiller palettes, which take RColorBrewer scales and make them continuous, are another good option for sequential scales:\n\n\n\n\n\n\n\n\n\np +\n  scale_fill_distiller(palette = \"YlGnBu\") +\n  ggtitle(\"palette = 'YlGnBu'\")\np + \n  scale_fill_distiller(palette = \"YlOrRd\", direction = 1) +\n  ggtitle(\"palette = 'YlOrRd', direction = 1\")\n\n\n\nNULL\n\n\nNULL\n\n\n\nThese are all of the sequential palettes available through colorspace:"
+  },
+  {
+    "objectID": "color.html#common-diverging-palettes",
+    "href": "color.html#common-diverging-palettes",
+    "title": "Colors",
+    "section": "Common diverging palettes",
+    "text": "Common diverging palettes\nAll colorspace diverging palettes:\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nlibrary(fivethirtyeight)\nlibrary(sf)\n\nstates &lt;- read_sf(\"tl_2025_us_state\") %&gt;% \n  filter(!NAME %in% c(\"Hawaii\", \"American Samoa\", \"United States Virgin Islands\", \n                      \"District of Columbia\", \"Puerto Rico\", \n                      \"Commonwealth of the Northern Mariana Islands\", \"Guam\", \n                      \"Alaska\")) %&gt;% \n  left_join(partisan_lean_state, by = c(\"NAME\" = \"state\")) %&gt;% \n  mutate(lean = ifelse(pvi_party == \"D\", pvi_amount * -1, pvi_amount))\n\nggplot(data = states, aes(fill = lean)) +\n  geom_sf() +\n  scale_fill_continuous_diverging(\n    name = \"Cook Partisan Voting Index\",\n    palette = \"Blue-Red\",\n    rev = F,\n    na.value = \"white\", \n    limits = c(-50, 50),\n    breaks = c(-50, 50),\n    labels = c(\"Lean Democrat\", \"Lean Republican\"),\n    # p1 adjusts how chroma should vary, makes chroma increase \n    # quickly near the midpoint (more concave)\n    p1 = .6) +\n  theme_map() +\n  # making the legend look nicer\n  theme(legend.position = \"inside\",\n        legend.position.inside = c(.05, .05),\n        legend.direction = \"horizontal\",\n        legend.title.position = \"top\", \n        legend.title = element_text(hjust = .5)) +\n  coord_sf(xlim = c(-130, -65), ylim = c(25, 50))"
   }
 ]

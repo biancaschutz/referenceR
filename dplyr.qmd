@@ -22,6 +22,62 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 The `select()` function is used to keep or drop columns.
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: 4
+#| fig-width: 8
+library(grid)
+library(ggarrow)
+library(colorspace)
+library(knitr)
+
+create_df <- function(bottom_right, rows, cols, colors, by_row = T, width = NULL, height = NULL) {
+  h <- ifelse(is.null(height), (1 - bottom_right[2] * 2)/rows, height)
+  w <- ifelse(is.null(width), .35 / cols, width)
+  x <- bottom_right[1]
+  y <- bottom_right[2]
+
+  fills <- adjust_transparency(colors, alpha = .5)
+  for (row in 1:rows) {
+    for (col in 1:cols) {
+      grid.draw(rectGrob(x = x, y = y, 
+                         width = w, height = h, 
+                         gp = gpar(
+                           col = ifelse(by_row,
+                                        colors[row],
+                                        colors[col]),
+                         fill = ifelse(by_row,
+                                        fills[row],
+                                        fills[col]))))
+      x <- x + w
+    }
+    x <- bottom_right[1]
+    y <- y + h + .001
+  }
+}
+grid.newpage()
+create_df(c(.15, .25), 5, 3, c("dodgerblue3", "springgreen3", "lightsalmon3"), by_row = F, width = 0.1166667, height = .12)
+
+create_df(c(.85, .25), 5, 1, c("dodgerblue3"), by_row = F, width = 0.1166667, height = .12)
+
+grid.draw(ggarrow::grob_arrow(x = unit(c(.55, .7), "npc"),
+                              y = unit(c(.5, .5), "npc"),
+                              length_head = unit(.025, "npc"),
+                              arrow_head = ggarrow::arrow_head_wings(offset = 45, inset = 45),
+                              shaft_width = unit(.025, "npc"),
+                              gp = gpar(fill = adjust_transparency("grey65", alpha = .5), col = "grey60")))
+
+grid.text("df |> select(Col1)", gp = gpar(fontsize = 15),x = unit(.5, "npc"), y = unit(.92, "npc"))
+
+grid.text("Col1", gp = gpar(fontsize = 15),x = unit(.15, "npc"), y = unit(.74, "npc"))
+grid.text("Col2", gp = gpar(fontsize = 15),x = unit(.265, "npc"), y = unit(.74, "npc"))
+grid.text("Col3", gp = gpar(fontsize = 15),x = unit(.38, "npc"), y = unit(.74, "npc"))
+
+grid.text("Col1", gp = gpar(fontsize = 15),x = unit(.85, "npc"), y = unit(.74, "npc"))
+```
+
+```{r}
 library(dplyr)
 library(tidyverse)
 colnames(starwars %>% select(name, homeworld)) # here, we keep only the name and homeworld columns
@@ -107,6 +163,51 @@ head(starwars %>% pull(name))
 # Keep or Drop Observations {#sec-keep-or-drop-observations}
 
 ## By Condition {#sec-by-condition}
+
+Use the `filter()` function from **dplyr** to pick rows based on some condition, such as `==` and `!=` for equality and inequality, **stringr** functions, and `>`/`>=`/`<`/`<=` for numeric comparisons.
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: 4
+#| fig-width: 8
+grid.newpage()
+
+# CREATE ORIGINAL/UNFILTERED DF
+create_df(c(.1, .15), 6, 3, c("dodgerblue3", "springgreen3", "dodgerblue3" ,"dodgerblue3", "lightsalmon3", "grey65"), width = 0.1166667, height = .12)
+
+# CREATE FILTERED DF
+create_df(c(.65, .3), 4, 3, c("dodgerblue3","dodgerblue3" ,"dodgerblue3", "grey65"), width = 0.1166667, height = .12)
+
+# ADD ARROW
+grid.draw(ggarrow::grob_arrow(x = unit(c(.435, .55), "npc"),
+                              y = unit(c(.475, .475), "npc"),
+                              length_head = unit(.025, "npc"),
+                              arrow_head = ggarrow::arrow_head_wings(offset = 45, inset = 45),
+                              shaft_width = unit(.025, "npc"),
+                              gp = gpar(fill = adjust_transparency("grey65", alpha = .5), col = "grey60")))
+
+# ADD COLUMN LABELS
+grid.text("Col1", gp = gpar(fontsize = 15),x = unit(.1, "npc"), y = unit(.835 - .075, "npc"))
+grid.text("Col2", gp = gpar(fontsize = 15),x = unit(.2175, "npc"), y = unit(.835 - .075, "npc"))
+grid.text("Col3", gp = gpar(fontsize = 15),x = unit(.2175 + .2175 - .1, "npc"), y = unit(.835 - .075, "npc"))
+grid.text("Col1", gp = gpar(fontsize = 15),x = unit(.65, "npc"), y = unit(.67, "npc"))
+grid.text("Col2", gp = gpar(fontsize = 15),x = unit(.65 + .1175, "npc"), y = unit(.67, "npc"))
+grid.text("Col3", gp = gpar(fontsize = 15),x = unit(.65 + .1175 * 2, "npc"), y = unit(.67, "npc"))
+
+grid.text("A", gp = gpar(fontsize = 15),x = unit(.1, "npc"), y = unit(.64, "npc"))
+grid.text("B", gp = gpar(fontsize = 15),x = unit(.1, "npc"), y = unit(.64 - 0.1225, "npc"))
+grid.text("B", gp = gpar(fontsize = 15),x = unit(.1, "npc"), y = unit(.64 - 0.1225 * 2, "npc"))
+grid.text("C", gp = gpar(fontsize = 15),x = unit(.1, "npc"), y = unit(.64 - 0.1225 * 3, "npc"))
+grid.text("B", gp = gpar(fontsize = 15),x = unit(.1, "npc"), y = unit(.64 - 0.1225 * 4, "npc"))
+
+grid.text("B", gp = gpar(fontsize = 15),x = unit(.65, "npc"), y = unit(.55, "npc"))
+grid.text("B", gp = gpar(fontsize = 15),x = unit(.65, "npc"), y = unit(.55 - 0.1225, "npc"))
+grid.text("B", gp = gpar(fontsize = 15),x = unit(.65, "npc"), y = unit(.55 - 0.1225 * 2, "npc"))
+
+grid.text("df |> filter(Col1 == 'B')", gp = gpar(fontsize = 15),x = unit(.5, "npc"), y = unit(.92, "npc"))
+```
 
 The primary function you will use to keep or drop observations is `filter()`. Some expressions to keep in mind with filtering are:
 
@@ -197,6 +298,52 @@ head(starwars %>%
 Use `arrange()` with or without `desc()` to sort a dataframe in ascending or descending order, respectively (either automatically or by a specific column).
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: 4
+#| fig-width: 8
+grid.newpage()
+
+# CREATE ORIGINAL/UNFILTERED DF
+create_df(c(.1, .15), 6, 3, c("dodgerblue3", "springgreen3", "dodgerblue3" ,"dodgerblue3", "lightsalmon3", "grey65"), width = 0.1166667, height = .12)
+
+# CREATE FILTERED DF
+create_df(c(.66, .15), 6, 3, c("springgreen3", "dodgerblue3", "dodgerblue3" ,"dodgerblue3", "lightsalmon3", "grey65"), width = 0.1166667, height = .12)
+
+# ADD ARROW
+grid.draw(ggarrow::grob_arrow(x = unit(c(.435, .55), "npc"),
+                              y = unit(c(.475, .475), "npc"),
+                              length_head = unit(.025, "npc"),
+                              arrow_head = ggarrow::arrow_head_wings(offset = 45, inset = 45),
+                              shaft_width = unit(.025, "npc"),
+                              gp = gpar(fill = adjust_transparency("grey65", alpha = .5), col = "grey60")))
+
+# ADD COLUMN LABELS
+grid.text("Col1", gp = gpar(fontsize = 15), x = unit(.1, "npc"), y = unit(.835 - .075, "npc"))
+grid.text("Col2", gp = gpar(fontsize = 15), x = unit(.2175, "npc"), y = unit(.835 - .075, "npc"))
+grid.text("Col3", gp = gpar(fontsize = 15), x = unit(.2175 + .2175 - .1, "npc"), y = unit(.835 - .075, "npc"))
+
+grid.text("A", gp = gpar(fontsize = 15), x = unit(.1, "npc"), y = unit(.64, "npc"))
+grid.text("B", gp = gpar(fontsize = 15), x = unit(.1, "npc"), y = unit(.64 - 0.1225, "npc"))
+grid.text("B", gp = gpar(fontsize = 15), x = unit(.1, "npc"), y = unit(.64 - 0.1225 * 2, "npc"))
+grid.text("C", gp = gpar(fontsize = 15), x = unit(.1, "npc"), y = unit(.64 - 0.1225 * 3, "npc"))
+grid.text("B", gp = gpar(fontsize = 15), x = unit(.1, "npc"), y = unit(.64 - 0.1225 * 4, "npc"))
+
+grid.text("df |> arrange(Col1)", gp = gpar(fontsize = 15), x = unit(.5, "npc"), y = unit(.92, "npc"))
+
+grid.text("Col1", gp = gpar(fontsize = 15), x = unit(.66, "npc"), y = unit(.835 - .075, "npc"))
+grid.text("Col2", gp = gpar(fontsize = 15), x = unit(.66 + .1175, "npc"), y = unit(.835 - .075, "npc"))
+grid.text("Col3", gp = gpar(fontsize = 15), x = unit(.66 + .1175 * 2, "npc"), y = unit(.835 - .075, "npc"))
+
+grid.text("A", gp = gpar(fontsize = 15),x = unit(.66, "npc"), y = unit(.64, "npc"))
+grid.text("B", gp = gpar(fontsize = 15),x = unit(.66, "npc"), y = unit(.64 - 0.1225, "npc"))
+grid.text("B", gp = gpar(fontsize = 15),x = unit(.66, "npc"), y = unit(.64 - 0.1225 * 2, "npc"))
+grid.text("B", gp = gpar(fontsize = 15),x = unit(.66, "npc"), y = unit(.64 - 0.1225 * 3, "npc"))
+grid.text("C", gp = gpar(fontsize = 15),x = unit(.66, "npc"), y = unit(.64 - 0.1225 * 4, "npc"))
+```
+
+```{r}
 head(starwars %>% 
        arrange(birth_year) %>% 
        relocate(birth_year, .after= name))
@@ -209,6 +356,74 @@ head(starwars %>%
 # Grouping and Summarizing {#sec-grouping-and-summarizing}
 
 The `group_by()` function performs functions based on groupings, such as mutations or summarizations. The `summarize()` function allows you to apply summary functions (such as mean, median, etc.) to calculate a new data frame, typically based on groupings.
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: 4
+#| fig-width: 8
+grid.newpage()
+
+# CREATE ORIGINAL/UNFILTERED DF
+create_df(c(.1, .1), 8, 3, c("lightsalmon3", "springgreen3", "dodgerblue3" ,"springgreen3", "lightsalmon3", "dodgerblue3",  "dodgerblue3", "grey65"), width = 0.075, height = .1)
+
+grid.text("Col1", gp = gpar(fontsize = 15), x = unit(.1, "npc"), y = unit(.81, "npc"))
+grid.text("Col2", gp = gpar(fontsize = 15), x = unit(.175, "npc"), y = unit(.81, "npc"))
+grid.text("Col3", gp = gpar(fontsize = 15), x = unit(.25, "npc"), y = unit(.81, "npc"))
+
+# ADD ARROWS
+grid.draw(ggarrow::grob_arrow(x = unit(c(.31, .37), "npc"),
+                              y = unit(c(.475, .475), "npc"),
+                              length_head = unit(.025, "npc"),
+                              arrow_head = ggarrow::arrow_head_wings(offset = 45, inset = 45),
+                              shaft_width = unit(.025, "npc"),
+                              gp = gpar(fill = adjust_transparency("grey65", alpha = .5), col = "grey60")))
+
+grid.draw(ggarrow::grob_arrow(x = unit(c(.61 + .015, .67  + .015), "npc"),
+                              y = unit(c(.475, .475), "npc"),
+                              length_head = unit(.025, "npc"),
+                              arrow_head = ggarrow::arrow_head_wings(offset = 45, inset = 45),
+                              shaft_width = unit(.025, "npc"),
+                              gp = gpar(fill = adjust_transparency("grey65", alpha = .5), col = "grey60")))
+
+grid.text("B", gp = gpar(fontsize = 15), x = unit(.1, "npc"), y = unit(.81-.1, "npc"))
+grid.text("B", gp = gpar(fontsize = 15), x = unit(.1, "npc"), y = unit(.81-.1 * 2, "npc"))
+grid.text("A", gp = gpar(fontsize = 15), x = unit(.1, "npc"), y = unit(.81-.1 * 3, "npc"))
+grid.text("C", gp = gpar(fontsize = 15), x = unit(.1, "npc"), y = unit(.81-.1 * 4, "npc"))
+grid.text("B", gp = gpar(fontsize = 15), x = unit(.1, "npc"), y = unit(.81-.1 * 5, "npc"))
+grid.text("C", gp = gpar(fontsize = 15), x = unit(.1, "npc"), y = unit(.81-.1 * 6 - .01, "npc"))
+grid.text("A", gp = gpar(fontsize = 15), x = unit(.1, "npc"), y = unit(.81-.1 * 7 - .01, "npc"))
+
+grid.text("2", gp = gpar(fontsize = 15), x = unit(.175, "npc"), y = unit(.81-.1, "npc"))
+grid.text("4", gp = gpar(fontsize = 15), x = unit(.175, "npc"), y = unit(.81-.1 * 2, "npc"))
+grid.text("1", gp = gpar(fontsize = 15), x = unit(.175, "npc"), y = unit(.81-.1 * 3, "npc"))
+grid.text("8", gp = gpar(fontsize = 15), x = unit(.175, "npc"), y = unit(.81-.1 * 4, "npc"))
+grid.text("3", gp = gpar(fontsize = 15), x = unit(.175, "npc"), y = unit(.81-.1 * 5, "npc"))
+grid.text("11", gp = gpar(fontsize = 15), x = unit(.175, "npc"), y = unit(.81-.1 * 6 - .01, "npc"))
+grid.text("5", gp = gpar(fontsize = 15), x = unit(.175, "npc"), y = unit(.81-.1 * 7 - .01, "npc"))
+
+create_df(c(.425, .075 + .05), 2, 3, c("springgreen3", "springgreen3"), width = 0.075, height = .1)
+
+create_df(c(.425, .3 + .05), 2, 3, c("lightsalmon3", "lightsalmon3"), width = 0.075, height = .1)
+
+create_df(c(.425, .525 + .05), 3, 3, c("dodgerblue3", "dodgerblue3", "dodgerblue3"), width = 0.075, height = .1)
+
+create_df(c(.75, .3), 4, 2, c("springgreen3", "dodgerblue3", "lightsalmon3", "grey65"), width = 0.1166667, height = .12)
+
+grid.text("Col1", gp = gpar(fontsize = 15), x = unit(.75, "npc"), y = unit(.67, "npc"))
+grid.text("Col2Sum", gp = gpar(fontsize = 15), x = unit(.8675, "npc"), y = unit(.67, "npc"))
+
+grid.text("A", gp = gpar(fontsize = 15), x = unit(.75, "npc"), y = unit(.67 - .125, "npc"))
+grid.text("B", gp = gpar(fontsize = 15), x = unit(.75, "npc"), y = unit(.67 - .125 * 2, "npc"))
+grid.text("C", gp = gpar(fontsize = 15), x = unit(.75, "npc"), y = unit(.67 - .125 * 3, "npc"))
+
+grid.text("6", gp = gpar(fontsize = 15), x = unit(.8675, "npc"), y = unit(.67  - .125, "npc"))
+grid.text("9", gp = gpar(fontsize = 15), x = unit(.8675, "npc"), y = unit(.67  - .125 * 2, "npc"))
+grid.text("19", gp = gpar(fontsize = 15), x = unit(.8675, "npc"), y = unit(.67  - .125 * 3, "npc"))
+
+grid.text("df |> group_by(Col1) |> summarize(Col2Sum = sum(Col2))", gp = gpar(fontsize = 15), x = unit(.5, "npc"), y = unit(.92, "npc"))
+```
 
 ## Summarize Data {#sec-summarize-data}
 
@@ -234,6 +449,52 @@ head(starwars %>%
 To count data, you can either use the `summarize()` function or the `count()` function.
 
 ```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: 4
+#| fig-width: 8
+grid.newpage()
+
+# CREATE ORIGINAL/UNFILTERED DF
+create_df(c(.1, .15), 6, 3, c("dodgerblue3", "springgreen3", "dodgerblue3" ,"dodgerblue3", "lightsalmon3", "grey65"), width = 0.1166667, height = .12)
+
+# ADD COLUMN LABELS
+grid.text("Col1", gp = gpar(fontsize = 15), x = unit(.1, "npc"), y = unit(.835 - .075, "npc"))
+grid.text("Col2", gp = gpar(fontsize = 15), x = unit(.2175, "npc"), y = unit(.835 - .075, "npc"))
+grid.text("Col3", gp = gpar(fontsize = 15), x = unit(.2175 + .2175 - .1, "npc"), y = unit(.835 - .075, "npc"))
+
+grid.text("A", gp = gpar(fontsize = 15),x = unit(.1, "npc"), y = unit(.64, "npc"))
+grid.text("B", gp = gpar(fontsize = 15),x = unit(.1, "npc"), y = unit(.64 - 0.1225, "npc"))
+grid.text("B", gp = gpar(fontsize = 15),x = unit(.1, "npc"), y = unit(.64 - 0.1225 * 2, "npc"))
+grid.text("C", gp = gpar(fontsize = 15),x = unit(.1, "npc"), y = unit(.64 - 0.1225 * 3, "npc"))
+grid.text("B", gp = gpar(fontsize = 15),x = unit(.1, "npc"), y = unit(.64 - 0.1225 * 4, "npc"))
+
+# ADD ARROW
+grid.draw(ggarrow::grob_arrow(x = unit(c(.45, .65), "npc"),
+                              y = unit(c(.475, .475), "npc"),
+                              length_head = unit(.025, "npc"),
+                              arrow_head = ggarrow::arrow_head_wings(offset = 45, inset = 45),
+                              shaft_width = unit(.025, "npc"),
+                              gp = gpar(fill = adjust_transparency("grey65", alpha = .5), col = "grey60")))
+
+create_df(c(.75, .3), 4, 2, c("springgreen3", "dodgerblue3", "lightsalmon3", "grey65"), width = 0.1166667, height = .12)
+
+grid.text("Col1", gp = gpar(fontsize = 15), x = unit(.75, "npc"), y = unit(.67, "npc"))
+grid.text("n", gp = gpar(fontsize = 15), x = unit(.865, "npc"), y = unit(.67, "npc"))
+
+grid.text("A", gp = gpar(fontsize = 15),x = unit(.75, "npc"), y = unit(.55, "npc"))
+grid.text("B", gp = gpar(fontsize = 15),x = unit(.75, "npc"), y = unit(.425, "npc"))
+grid.text("C", gp = gpar(fontsize = 15),x = unit(.75, "npc"), y = unit(.55 - .125*2, "npc"))
+
+grid.text("1", gp = gpar(fontsize = 15),x = unit(.75 + .115, "npc"), y = unit(.55, "npc"))
+grid.text("3", gp = gpar(fontsize = 15),x = unit(.75 + .115, "npc"), y = unit(.425, "npc"))
+grid.text("1", gp = gpar(fontsize = 15),x = unit(.75 + .115, "npc"), y = unit(.55 - .125*2, "npc"))
+
+grid.text("df |> count(Col1)", gp = gpar(fontsize = 15), x = unit(.5, "npc"), y = unit(.92, "npc"))
+```
+
+```{r}
 head(starwars %>%
        group_by(homeworld) %>%
        summarize(num_characters = n()))
@@ -247,6 +508,47 @@ head(starwars %>%
 ## Mutation {#sec-mutation}
 
 The `mutate()` function allows you to apply a variety of functions to create new variables or change existing ones.
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: 4
+#| fig-width: 8
+grid.newpage()
+
+# CREATE ORIGINAL/UNFILTERED DF
+create_df(c(.1, .15), 6, 3, c("dodgerblue3", "springgreen3", "lightsalmon3"), width = 0.1166667 - .025, height = .12, by_row = F)
+
+# CREATE FILTERED DF
+create_df(c(.66, .15), 6, 4, c("dodgerblue3", "springgreen3", "lightsalmon3", "gold1"), width = 0.1166667 - .025, height = .12, by_row = F)
+
+# ADD ARROW
+grid.draw(ggarrow::grob_arrow(x = unit(c(.4, .55), "npc"),
+                              y = unit(c(.475, .475), "npc"),
+                              length_head = unit(.025, "npc"),
+                              arrow_head = ggarrow::arrow_head_wings(offset = 45, inset = 45),
+                              shaft_width = unit(.025, "npc"),
+                              gp = gpar(fill = adjust_transparency("grey65", alpha = .5), col = "grey60")))
+
+# ADD COLUMN LABELS
+grid.text("Col1", gp = gpar(fontsize = 15), x = unit(.1, "npc"), y = unit(.835 - .075, "npc"))
+grid.text("Col2", gp = gpar(fontsize = 15), x = unit(.2175- .025, "npc"), y = unit(.835 - .075, "npc"))
+grid.text("Col3", gp = gpar(fontsize = 15), x = unit(.2175 + .065, "npc"), y = unit(.835 - .075, "npc"))
+
+grid.text("df |> mutate(Col4 = 1:5)", gp = gpar(fontsize = 15), x = unit(.5, "npc"), y = unit(.92, "npc"))
+
+grid.text("Col1", gp = gpar(fontsize = 15), x = unit(.66, "npc"), y = unit(.835 - .075, "npc"))
+grid.text("Col2", gp = gpar(fontsize = 15), x = unit(.66 + 0.09, "npc"), y = unit(.835 - .075, "npc"))
+grid.text("Col3", gp = gpar(fontsize = 15), x = unit(.66 + 0.09*2, "npc"), y = unit(.835 - .075, "npc"))
+grid.text("Col4", gp = gpar(fontsize = 15), x = unit(.66 + 0.09*3 + .005, "npc"), y = unit(.835 - .075, "npc"))
+
+grid.text("1", gp = gpar(fontsize = 15), x = unit(.66 + 0.09*3 + .005, "npc"), y = unit(.64, "npc"))
+grid.text("2", gp = gpar(fontsize = 15), x = unit(.66 + 0.09*3 + .005, "npc"), y = unit(.64 - .12, "npc"))
+grid.text("3", gp = gpar(fontsize = 15), x = unit(.66 + 0.09*3 + .005, "npc"), y = unit(.64 - .12 * 2, "npc"))
+grid.text("4", gp = gpar(fontsize = 15), x = unit(.66 + 0.09*3 + .005, "npc"), y = unit(.64 - .12 * 3, "npc"))
+grid.text("5", gp = gpar(fontsize = 15), x = unit(.66 + 0.09*3 + .005, "npc"), y = unit(.64 - .12 * 4 - .0075, "npc"))
+```
 
 ### Basic operations
 
@@ -320,6 +622,100 @@ See this [cheat sheet](https://github.com/rstudio/cheatsheets/blob/main/data-tra
 
 Wide data has a column per "group", whereas long data has a "group" column. For example, a time series would have a column per year as a wide dataset, and a column called year as a long dataset.
 
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+#| fig-height: 4
+#| fig-width: 8
+library(grid)
+library(ggarrow)
+library(colorspace)
+library(knitr)
+grid.newpage()
+
+create_df <- function(bottom_right, rows, cols, colors, by_row = T, width = NULL, height = NULL) {
+  h <- ifelse(is.null(height), (1 - bottom_right[2] * 2)/rows, height)
+  w <- ifelse(is.null(width), .35 / cols, width)
+  x <- bottom_right[1]
+  y <- bottom_right[2]
+
+  fills <- adjust_transparency(colors, alpha = .5)
+  for (row in 1:rows) {
+    for (col in 1:cols) {
+      grid.draw(rectGrob(x = x, y = y, 
+                         width = w, height = h, 
+                         gp = gpar(
+                           col = ifelse(by_row,
+                                        colors[row],
+                                        colors[col]),
+                         fill = ifelse(by_row,
+                                        fills[row],
+                                        fills[col]))))
+      x <- x + w
+    }
+    x <- bottom_right[1]
+    y <- y + h + .001
+  }
+}
+# CREATE ORIGINAL/UNFILTERED DF
+create_df(c(.2, .15), 10, 2, c("dodgerblue3", "dodgerblue3" ,"dodgerblue3", "lightsalmon3", "lightsalmon3", "lightsalmon3", "springgreen3", "springgreen3", "springgreen3","grey65"), width = 0.1, height = .075)
+
+# CREATE FILTERED DF
+create_df(c(.65, .3), 4, 3, c("springgreen3", "lightsalmon3", "dodgerblue3"), width = 0.1166667, height = .12, by_row = F)
+
+# ADD ARROW
+grid.draw(ggarrow::grob_arrow(x = unit(c(.4, .55), "npc"),
+                              y = unit(c(.6, .6), "npc"),
+                              length_head = unit(.025, "npc"),
+                              arrow_head = ggarrow::arrow_head_wings(offset = 45, inset = 45),
+                              shaft_width = unit(.025, "npc"),
+                              gp = gpar(fill = adjust_transparency("grey65", alpha = .5), col = "grey60")))
+
+grid.draw(ggarrow::grob_arrow(x = unit(c(.55, .4), "npc"),
+                              y = unit(c(.4, .40), "npc"),
+                              length_head = unit(.025, "npc"),
+                              arrow_head = ggarrow::arrow_head_wings(offset = 45, inset = 45),
+                              shaft_width = unit(.025, "npc"),
+                              gp = gpar(fill = adjust_transparency("grey65", alpha = .5), col = "grey60")))
+
+# ADD LABELS
+grid.text("name", gp = gpar(fontsize = 15), x = unit(.2, "npc"), y = unit(.835, "npc"))
+grid.text("value", gp = gpar(fontsize = 15), x = unit(.3, "npc"), y = unit(.835, "npc"))
+
+curr_var <- 1
+
+set.seed(123)
+vals <- sample(1:10, 9, replace = T)
+
+for (i in 1:9) {
+  if (i == 4) {
+    curr_var <- 2
+  }
+  if (i == 7) {
+    curr_var <- 3
+  }
+grid.text(paste0("var", curr_var), gp = gpar(fontsize = 15), x = unit(.2, "npc"), y = unit(.835 - .07575 * i, "npc"))
+grid.text(vals[i], gp = gpar(fontsize = 15), x = unit(.3, "npc"), y = unit(.835 - .07575 * i, "npc"))
+}
+
+grid.text("var1", gp = gpar(fontsize = 15),x = unit(.65, "npc"), y = unit(.67, "npc"))
+grid.text("var2", gp = gpar(fontsize = 15),x = unit(.65 + .1175, "npc"), y = unit(.67, "npc"))
+grid.text("var3", gp = gpar(fontsize = 15),x = unit(.65 + .1175 * 2, "npc"), y = unit(.67, "npc"))
+
+idx <- 1
+for (var in 0:2) {
+  for (row in 1:3) {
+    grid.text(vals[idx], gp = gpar(fontsize = 15),x = unit(.65 + .1175 * var, "npc"), y = unit(.67 - .125 * row, "npc"))
+    idx <- idx + 1
+  }
+}
+
+grid.text("pivot_wider()", gp = gpar(fontsize = 15),x = unit(.475, "npc"), y = unit(.7, "npc"))
+
+grid.text("pivot_longer()", gp = gpar(fontsize = 15),x = unit(.475, "npc"), y = unit(.3, "npc"))
+```
+
 To convert a dataset from wide to long, use `pivot_longer()`:
 
 ```{r}
@@ -354,6 +750,8 @@ head(Seatbelts_wide)
 ## Merging On Common Columns
 
 To join datasets that share columns in common, we use different types of joins to merge the datasets based on specified columns.
+
+![](join.svg){fig-align="center" width="100%"}
 
 ```{r}
 ratings <- c(6.6, 7.6, 8.6, 8.7, 8.3, 7.7, 6.8, 6.3)

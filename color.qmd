@@ -144,7 +144,8 @@ Set1 is likely the better choice with small dots, where stronger or darker color
 ```{r}
 #| echo: false
 #| layout-ncol: 3
-#| fig-height: 6
+#| fig-height: 4
+#| fig-width: 4
 
 plot <- ggplot(iris, 
                aes(x = Petal.Length, 
@@ -227,6 +228,8 @@ With different color palettes, the area in the middle tends to have lighter colo
 ```{r}
 #| echo: false
 #| layout-ncol: 3
+#| fig-height: 4
+#| fig-width: 4
 
 get_lower_tri<-function(cormat){
     cormat[upper.tri(cormat, diag = FALSE)] <- NA
@@ -257,15 +260,15 @@ ggplot(melted_cormat, aes(x = Var1, y = Var2, fill = value)) +
                        limits = c(-1, 1)) +
   theme_void() +
   scale_x_discrete(position = "top") +
-  theme(axis.text.x = element_text(),
-        axis.text.y = element_text(hjust = 1),
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(hjust = 1, size = 10),
         legend.position = "inside",
         legend.direction = "horizontal",
         legend.title.position = "top",
         legend.title = element_text(hjust = .5),
         legend.position.inside = c(.75,.25)) +
   coord_fixed() +
-  ggtitle("Too much whitespace, RColorBrewer PiYG")
+  ggtitle("Too much whitespace\nRColorBrewer PiYG")
 
 library(rcartocolor)
 ggplot(melted_cormat, aes(x = Var1, y = Var2, fill = value)) + 
@@ -278,15 +281,15 @@ ggplot(melted_cormat, aes(x = Var1, y = Var2, fill = value)) +
                        limits = c(-1, 1)) +
   theme_void() +
   scale_x_discrete(position = "top") +
-  theme(axis.text.x = element_text(),
-        axis.text.y = element_text(hjust = 1),
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(hjust = 1, size = 10),
         legend.position = "inside",
         legend.direction = "horizontal",
         legend.title.position = "top",
         legend.title = element_text(hjust = .5),
         legend.position.inside = c(.75,.25)) +
   coord_fixed() +
-  ggtitle("Too little whitespace, rcartocolor Earth")
+  ggtitle("Too little whitespace\nrcartocolor Earth")
 
 ggplot(melted_cormat, aes(x = Var1, y = Var2, fill = value)) + 
   geom_tile(color = "white") +
@@ -300,15 +303,15 @@ ggplot(melted_cormat, aes(x = Var1, y = Var2, fill = value)) +
     na.value = "white") +
   theme_void() +
   scale_x_discrete(position = "top") +
-  theme(axis.text.x = element_text(),
-        axis.text.y = element_text(hjust = 1),
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(hjust = 1, size = 10),
         legend.position = "inside",
         legend.direction = "horizontal",
         legend.title.position = "top",
         legend.title = element_text(hjust = .5),
         legend.position.inside = c(.75,.25)) +
   coord_fixed() +
-  ggtitle("Good amount of whitespace, colorspace Blue-Red")
+  ggtitle("Good amount of whitespace\ncolorspace Blue-Red")
 ```
 
 ## Highlighting scales
@@ -320,6 +323,8 @@ You don't want a scale meant to highlight a particular category to be too comple
 #| message: false 
 #| warning: false
 #| layout-ncol: 2
+#| fig-width: 5
+#| fig-height: 4
 
 library(fivethirtyeight)
 library(tidyr)

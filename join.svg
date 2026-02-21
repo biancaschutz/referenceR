@@ -215,7 +215,7 @@
        id="page1"
        width="400"
        height="247.21333"
-       margin="48.939999 82.779999"
+       margin="48.939999 56.446667 27.730667 72.151733"
        bleed="0" />
   </sodipodi:namedview>
   <g
@@ -354,5 +354,19 @@
        style="fill:#1d90ff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.75;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
        transform="matrix(1.3333333,0,0,-1.3333333,266.78,74.16)"
        clip-path="url(#clipPath40)" />
+    <text
+       id="text40"
+       xml:space="preserve"
+       transform="matrix(1.3333333,0,0,1.3333333,72.151733,38.797333)"><tspan
+         id="tspan40"
+         style="font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;font-family:SourceSansPro-Regular;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         x="0"
+         dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 37.040001"
+         y="0">df1 |&gt; full_join(df2)df1 |&gt; inner_join(df2)</tspan><tspan
+         id="tspan41"
+         style="font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;font-family:SourceSansPro-Regular;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+         x="0"
+         dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 37.41"
+         y="75.699997">df1 |&gt; lef_join(df2)df1 |&gt; right_join(df2)</tspan></text>
   </g>
 </svg>
